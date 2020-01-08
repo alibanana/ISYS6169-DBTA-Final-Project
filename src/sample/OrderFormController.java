@@ -8,20 +8,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
 
-import java.io.File;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class OrderFormController implements Initializable {
     private Controller parentController;
@@ -41,7 +37,8 @@ public class OrderFormController implements Initializable {
 
     @FXML private Label cashierName;
     @FXML private Label orderID;
-    @FXML private DatePicker orderDate;
+    @FXML private Label orderDate;
+    @FXML private Label orderTime;
     @FXML private Label orderStatus;
 
     @FXML private Label grandTotal;
@@ -64,7 +61,8 @@ public class OrderFormController implements Initializable {
         priceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
 
         // Set Order Date to Current Date
-        orderDate.setValue(LocalDate.now());
+        orderDate.setText(String.valueOf(LocalDate.now()));
+        orderTime.setText(String.valueOf(LocalTime.now()));
     }
 
     public void initData(Controller parentController, String prevOrderID, ObservableList<Product> ProductList){
@@ -80,6 +78,7 @@ public class OrderFormController implements Initializable {
 
         // Set value
         orderID.setText(newOrderID);
+
     }
 
     private void bindProductName(){
@@ -147,8 +146,10 @@ public class OrderFormController implements Initializable {
         int Qty;
         String Description;
 
+        LocalDateTime dateTime = LocalDate.parse(orderDate.getText()).atTime(LocalTime.parse(orderTime.getText()));
+
         // SQL queries
-        Database.addOrder(newOrderID, cashierName.getText(), orderDate.getValue(), Integer.valueOf(grandTotal.getText()), Integer.valueOf(cash.getText()), Integer.valueOf(change.getText()), orderStatus.getText());
+        Database.addOrder(newOrderID, cashierName.getText(), dateTime, Integer.valueOf(grandTotal.getText()), Integer.valueOf(cash.getText()), orderStatus.getText());
         for (SubOrder subOrder: SubOrderList){
             OrderID = newOrderID;
             ProductID = subOrder.getProductID();

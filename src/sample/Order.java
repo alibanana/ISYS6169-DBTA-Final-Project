@@ -1,30 +1,31 @@
 package sample;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Order {
     private String OrderID;
     private String CashierName;
-    private LocalDate OrderDate;
+    private LocalDateTime DateTime;
     private int Total;
     private int Cash;
     private int Change;
     private String Status;
 
-    public Order(String orderID, String cashierName, LocalDate orderDate, int total, int cash, String status) {
+    public Order(String orderID, String cashierName, LocalDateTime dateTime, int total, int cash, String status) {
         OrderID = orderID;
         CashierName = cashierName;
-        OrderDate = orderDate;
+        DateTime = dateTime;
         Total = total;
         Cash = cash;
         Status = status;
     }
 
     // Constructor for TableView
-    public Order(String orderID, String cashierName, LocalDate orderDate, int total, String status) {
+    public Order(String orderID, String cashierName, LocalDateTime dateTime, int total, String status) {
         OrderID = orderID;
         CashierName = cashierName;
-        OrderDate = orderDate;
+        DateTime = dateTime;
         Total = total;
         Status = status;
     }
@@ -37,12 +38,11 @@ public class Order {
         OrderID = orderID;
     }
 
-    public LocalDate getOrderDate() {
-        return OrderDate;
+    public void setOrderDate(LocalDateTime dateTime) {
+        DateTime = dateTime;
     }
-
-    public void setOrderDate(LocalDate orderDate) {
-        OrderDate = orderDate;
+    public LocalDateTime OrderDate(LocalDateTime dateTime) {
+        return DateTime;
     }
 
     public int getTotal() {

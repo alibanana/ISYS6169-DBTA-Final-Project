@@ -3,14 +3,15 @@ package sample;
 import java.lang.reflect.Type;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Database {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost/21_dbta";
     static final String USER = "root";
-    static final String PASS = "2201798295Binus";
-//    static final String PASS = "";
+//    static final String PASS = "2201798295Binus";
+    static final String PASS = "";
     static Connection conn;
     static Statement stmt;
     static ResultSet rs;
@@ -83,13 +84,13 @@ public class Database {
     }
 
     // Order Queries
-    public static void addOrder(String order_id, String employee_id, LocalDate date, int total, int cash, int changes, String status){
+    public static void addOrder(String order_id, String employee_id, LocalDateTime dateTime, int total, int cash, String status){
         try {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "INSERT INTO orders(order_id, employee_id, date, total, cash, changes, status) VALUE('%s', '%s', '%s', '%d', '%d', '%d', '%s', '%s')";
-            sql = String.format(sql, order_id, employee_id, date, total, cash, changes, status);
+            String sql = "INSERT INTO orders(order_id, employee_id, dateTime, total, cash, status) VALUE('%s', '%s', '%s', '%d', '%d', '%d', '%s')";
+            sql = String.format(sql, order_id, employee_id, dateTime, total, cash, status);
             stmt.execute(sql);
 
             System.out.println(String.format("Added %s to orders", order_id));

@@ -63,7 +63,7 @@ public class EditOrderFormController implements Initializable {
 
         cashierName.setText(order.getCashierName());
         orderID.setText(order.getOrderID());
-        orderDate.setValue(order.getOrderDate());
+//        orderDate.setValue(order.getOrderDate());
         orderStatus.setText(order.getStatus());
         grandTotal.setText(String.valueOf(order.getTotal()));
         cash.setText(String.valueOf(order.getCash()));
