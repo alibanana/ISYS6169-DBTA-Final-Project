@@ -24,4 +24,4 @@ hs_err_pid*
 
 # XML Files & Production
 *.xml
-/out
+/out/*
