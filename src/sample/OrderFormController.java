@@ -35,15 +35,15 @@ public class OrderFormController implements Initializable {
     @FXML private TextField qty;
     @FXML private TextArea productDescription;
 
-    @FXML private Label cashierName;
-    @FXML private Label orderID;
-    @FXML private Label orderDate;
-    @FXML private Label orderTime;
-    @FXML private Label orderStatus;
+    @FXML private Label cashierNameLabel;
+    @FXML private Label orderIDLabel;
+    @FXML private Label orderDateLabel;
+    @FXML private Label orderTimeLabel;
+    @FXML private Label orderStatusLabel;
 
-    @FXML private Label grandTotal;
+    @FXML private Label grandTotalLabel;
     @FXML private TextField cash;
-    @FXML private Label change;
+    @FXML private Label changeLabel;
 
     // Table Members
     @FXML private TableView<SubOrder> SubOrderTable;
@@ -61,8 +61,8 @@ public class OrderFormController implements Initializable {
         priceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
 
         // Set Order Date to Current Date
-        orderDate.setText(String.valueOf(LocalDate.now()));
-        orderTime.setText(String.valueOf(LocalTime.now()));
+        orderDateLabel.setText(String.valueOf(LocalDate.now()));
+        orderTimeLabel.setText(String.valueOf(LocalTime.now()));
     }
 
     public void initData(Controller parentController, String prevOrderID, ObservableList<Product> ProductList){
@@ -77,8 +77,7 @@ public class OrderFormController implements Initializable {
         System.out.println("Order ID: " + newOrderID);
 
         // Set value
-        orderID.setText(newOrderID);
-
+        orderIDLabel.setText(newOrderID);
     }
 
     private void bindProductName(){
@@ -130,12 +129,12 @@ public class OrderFormController implements Initializable {
     public void calculatePaid(){
         int Change = 0;
         // Getting Grand Total value
-        int gTotal = Integer.parseInt(grandTotal.getText());
+        int gTotal = Integer.parseInt(grandTotalLabel.getText());
         // Getting Paid value
         int Paid = Integer.parseInt(cash.getText());
 
         Change =  Paid - gTotal;
-        change.setText(String.valueOf(Change));
+        changeLabel.setText(String.valueOf(Change));
     }
 
     @FXML
@@ -146,10 +145,10 @@ public class OrderFormController implements Initializable {
         int Qty;
         String Description;
 
-        LocalDateTime dateTime = LocalDate.parse(orderDate.getText()).atTime(LocalTime.parse(orderTime.getText()));
+        LocalDateTime dateTime = LocalDate.parse(orderDateLabel.getText()).atTime(LocalTime.parse(orderTimeLabel.getText()));
 
         // SQL queries
-        Database.addOrder(newOrderID, cashierName.getText(), dateTime, Integer.valueOf(grandTotal.getText()), Integer.valueOf(cash.getText()), orderStatus.getText());
+        Database.addOrder(newOrderID, cashierNameLabel.getText(), dateTime, Integer.valueOf(grandTotalLabel.getText()), Integer.valueOf(cash.getText()), orderStatusLabel.getText());
         for (SubOrder subOrder: SubOrderList){
             OrderID = newOrderID;
             ProductID = subOrder.getProductID();
@@ -175,6 +174,6 @@ public class OrderFormController implements Initializable {
         }
 
         // Set Labels;
-        grandTotal.setText(String.valueOf(gTotal));
+        grandTotalLabel.setText(String.valueOf(gTotal));
     }
 }

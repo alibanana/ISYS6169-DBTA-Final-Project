@@ -37,16 +37,28 @@
                   <Font name="Arial" size="18.0" />
                </font>
             </Label>
+            <Label fx:id="EmployeeLabel" alignment="CENTER" layoutY="267.0" onMouseClicked="#ProductLabelClicked" prefHeight="57.0" prefWidth="166.0" style="-fx-background-color: #FFFFFF;" text="EMPLOYEE" textAlignment="CENTER" textFill="#9a9a9a">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="BranchLabel" alignment="CENTER" layoutY="323.0" onMouseClicked="#ProductLabelClicked" prefHeight="57.0" prefWidth="166.0" style="-fx-background-color: #FFFFFF;" text="BRANCH" textAlignment="CENTER" textFill="#9a9a9a">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Rectangle fx:id="ProductRectangle1" arcHeight="5.0" arcWidth="5.0" fill="#640e19" height="57.0" layoutY="267.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="5.0" />
+            <Rectangle fx:id="ProductRectangle11" arcHeight="5.0" arcWidth="5.0" fill="#640e19" height="57.0" layoutY="323.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="5.0" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="OrderPane" layoutX="166.0" prefHeight="700.0" prefWidth="1034">
+      <AnchorPane fx:id="OrderPane" layoutX="166.0" prefHeight="700.0" prefWidth="1034" visible="false">
          <children>
             <TableView fx:id="OrderTable" layoutX="28.0" layoutY="79.0" prefHeight="559.0" prefWidth="850.0">
               <columns>
                 <TableColumn fx:id="OrdIDCol" prefWidth="164.0" resizable="false" text="Order ID" />
                   <TableColumn fx:id="EmpIDCol" prefWidth="148.0" resizable="false" text="Employee" />
                   <TableColumn fx:id="OrdDateCol" prefWidth="171.0" resizable="false" text="Date" />
-                  <TableColumn fx:id="OrdStatusCol" prefWidth="141.0" resizable="false" text="Status" />
+                  <TableColumn fx:id="BranchCol" prefWidth="141.0" resizable="false" text="Branch" />
                   <TableColumn fx:id="OrdTotalCol" prefWidth="225.0" resizable="false" text="Total" />
               </columns>
             </TableView>
@@ -86,10 +98,11 @@
          <children>
             <TableView fx:id="ProductTable" layoutX="28.0" layoutY="69.0" prefHeight="569.0" prefWidth="850.0">
                <columns>
-                  <TableColumn fx:id="ProdNoCol" prefWidth="49.0" resizable="false" text="#" />
-                  <TableColumn fx:id="ProdIDCol" prefWidth="266.0" resizable="false" text="Product ID" />
-                  <TableColumn fx:id="ProdNameCol" prefWidth="294.0" resizable="false" text="Name" />
-                  <TableColumn fx:id="ProdPriceCol" minWidth="0.0" prefWidth="240.0" resizable="false" text="Price" />
+                  <TableColumn fx:id="ProdNoCol" prefWidth="43.0" resizable="false" text="#" />
+                  <TableColumn fx:id="ProdIDCol" prefWidth="134.0" resizable="false" text="Product ID" />
+                  <TableColumn fx:id="ProdNameCol" prefWidth="273.0" resizable="false" text="Name" />
+                  <TableColumn fx:id="ProdTypeCol" minWidth="0.0" prefWidth="192.0" resizable="false" text="Type" />
+                  <TableColumn fx:id="ProdPriceCol" maxWidth="308.0" minWidth="0.0" prefWidth="207.0" resizable="false" text="Price" />
                </columns>
             </TableView>
             <Label layoutX="28.0" layoutY="21.0" text="Products">
@@ -114,6 +127,84 @@
             </Label>
             <ComboBox fx:id="FilterProduct" layoutX="160.0" layoutY="31.0" onAction="#RefreshProductTable" prefHeight="31.0" prefWidth="184.0" style="-fx-background-color: #D1D1D1;" />
             <Label fx:id="ProductFilterLabel" layoutX="160.0" layoutY="14.0" onMouseClicked="#NewOrderClicked" text="Filter" textFill="#5596fd">
+               <font>
+                  <Font name="Arial" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="EmployeePane" layoutX="171.0" prefHeight="700.0" prefWidth="900.0" visible="false">
+         <children>
+            <TableView fx:id="EmployeeTable" layoutX="28.0" layoutY="69.0" prefHeight="569.0" prefWidth="850.0">
+               <columns>
+                  <TableColumn fx:id="ProdNoCol1" prefWidth="43.0" resizable="false" text="#" />
+                  <TableColumn fx:id="EmpIDCol" prefWidth="134.0" resizable="false" text="Employee ID" />
+                  <TableColumn fx:id="EmpNameCol" prefWidth="273.0" resizable="false" text="Name" />
+                  <TableColumn fx:id="EmpPositionCol" minWidth="0.0" prefWidth="192.0" resizable="false" text="Position" />
+                  <TableColumn fx:id="EmpPasswordCol" maxWidth="308.0" minWidth="0.0" prefWidth="207.0" resizable="false" text="Password" />
+               </columns>
+            </TableView>
+            <Label layoutX="28.0" layoutY="21.0" text="Employee">
+               <font>
+                  <Font name="Arial Bold" size="26.0" />
+               </font>
+            </Label>
+            <Label fx:id="NewEmployeeLabel" layoutX="740.0" layoutY="26.0" onMouseClicked="#NewProductClicked" text="+ New Employee" textFill="#5596fd">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="DeleteEmployeeLabel" layoutX="728.0" layoutY="655.0" onMouseClicked="#DeleteProductClicked" text="- Delete Employee" textFill="#ff1818">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="EditEmployeeLabel" layoutX="27.0" layoutY="655.0" onMouseClicked="#EditProductClicked" text="Edit Employee" textFill="#684efc">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="FilterEmployee" layoutX="160.0" layoutY="31.0" onAction="#RefreshProductTable" prefHeight="31.0" prefWidth="184.0" style="-fx-background-color: #D1D1D1;" />
+            <Label fx:id="ProductFilterLabel1" layoutX="160.0" layoutY="14.0" onMouseClicked="#NewOrderClicked" text="Filter" textFill="#5596fd">
+               <font>
+                  <Font name="Arial" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="BranchPane" layoutX="171.0" prefHeight="700.0" prefWidth="900.0">
+         <children>
+            <TableView fx:id="BranchTable" layoutX="28.0" layoutY="69.0" prefHeight="569.0" prefWidth="850.0">
+               <columns>
+                  <TableColumn fx:id="ProdNoCol11" prefWidth="43.0" resizable="false" text="#" />
+                  <TableColumn fx:id="BranchIDCol" prefWidth="134.0" resizable="false" text="Branch ID" />
+                  <TableColumn fx:id="BranchNameCol" prefWidth="176.0" resizable="false" text="Name" />
+                  <TableColumn fx:id="BranchAddCol" minWidth="0.0" prefWidth="331.0" resizable="false" text="Address" />
+                  <TableColumn fx:id="BranchPhoneCol" maxWidth="308.0" minWidth="0.0" prefWidth="165.0" resizable="false" text="Phone" />
+               </columns>
+            </TableView>
+            <Label layoutX="28.0" layoutY="21.0" text="Branch">
+               <font>
+                  <Font name="Arial Bold" size="26.0" />
+               </font>
+            </Label>
+            <Label fx:id="NewBranchLabel" layoutX="763.0" layoutY="36.0" onMouseClicked="#NewProductClicked" text="+ New Branch" textFill="#5596fd">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="DeleteBranchLabel" layoutX="728.0" layoutY="655.0" onMouseClicked="#DeleteProductClicked" text="- Delete Employee" textFill="#ff1818">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="EditBranchLabel" layoutX="27.0" layoutY="655.0" onMouseClicked="#EditProductClicked" text="Edit Branch" textFill="#684efc">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="FilterBranch" layoutX="160.0" layoutY="31.0" onAction="#RefreshProductTable" prefHeight="31.0" prefWidth="184.0" style="-fx-background-color: #D1D1D1;" />
+            <Label fx:id="ProductFilterLabel11" layoutX="160.0" layoutY="14.0" onMouseClicked="#NewOrderClicked" text="Filter" textFill="#5596fd">
                <font>
                   <Font name="Arial" size="12.0" />
                </font>

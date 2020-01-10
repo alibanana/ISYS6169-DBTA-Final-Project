@@ -46,7 +46,7 @@ public class Controller implements Initializable {
     @FXML private TableColumn<Order, String> OrdIDCol;
     @FXML private TableColumn<Order, String> EmpIDCol;
     @FXML private TableColumn<Order, String> OrdDateCol;
-    @FXML private TableColumn<Order, String> OrdStatusCol;
+    @FXML private TableColumn<Order, String> BranchCol;
     @FXML private TableColumn<Order, Integer> OrdTotalCol;
     ObservableList<Order> OrderList = FXCollections.observableArrayList();
 
@@ -61,8 +61,12 @@ public class Controller implements Initializable {
     @FXML private TableColumn<Product, Integer> ProdNoCol;
     @FXML private TableColumn<Product, String> ProdIDCol;
     @FXML private TableColumn<Product, String> ProdNameCol;
+    @FXML private TableColumn<Product, Integer> ProdTypeCol;
     @FXML private TableColumn<Product, Integer> ProdPriceCol;
     ObservableList<Product> ProductList = FXCollections.observableArrayList();
+
+    // Employee Pane Members
+    // Branch Pane Members
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
@@ -233,7 +237,7 @@ public class Controller implements Initializable {
         OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("order_id"));
         EmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
         OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        OrdStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        BranchCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("total"));
         OrderTable.setItems(OrderList);
     }
@@ -244,7 +248,7 @@ public class Controller implements Initializable {
         OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("order_id"));
         EmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
         OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        OrdStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        BranchCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("total"));
         OrderTable.setItems(OrderList);
     }
@@ -350,6 +354,7 @@ public class Controller implements Initializable {
         ProdNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
         ProdIDCol.setCellValueFactory(new PropertyValueFactory<>("ProductID"));
         ProdNameCol.setCellValueFactory(new PropertyValueFactory<>("ProductName"));
+        ProdTypeCol.setCellValueFactory(new PropertyValueFactory<>("ProductType"));
         ProdPriceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
         ProductTable.setItems(ProductList);
     }
@@ -360,6 +365,7 @@ public class Controller implements Initializable {
         ProdNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
         ProdIDCol.setCellValueFactory(new PropertyValueFactory<>("ProductID"));
         ProdNameCol.setCellValueFactory(new PropertyValueFactory<>("ProductName"));
+        ProdTypeCol.setCellValueFactory(new PropertyValueFactory<>("ProductType"));
         ProdPriceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
         ProductTable.setItems(ProductList);
     }
