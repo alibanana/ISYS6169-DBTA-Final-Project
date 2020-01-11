@@ -27,11 +27,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Controller implements Initializable {
+    // Settins Options
+    int Settings;
+
     // Sidebar Pane Members
     @FXML private Label OrderLabel;
     @FXML private Label ProductLabel;
+    @FXML private Label EmployeeLabel;
+    @FXML private Label BranchLabel;
     @FXML private Rectangle OrderRectangle;
     @FXML private Rectangle ProductRectangle;
+    @FXML private Rectangle EmployeeRectangle;
+    @FXML private Rectangle BranchRectangle;
 
     // Order Pane Members
     @FXML private AnchorPane OrderPane;
@@ -66,7 +73,30 @@ public class Controller implements Initializable {
     ObservableList<Product> ProductList = FXCollections.observableArrayList();
 
     // Employee Pane Members
+    @FXML private AnchorPane EmployeePane;
+    @FXML private Label NewEmployeeLabel;
+    @FXML private Label DeleteEmployeeLabel;
+    @FXML private Label EditEmployeeLabel;
+    @FXML private ComboBox EmployeeFilter;
+    @FXML private Label EmployeeFilterLabel;
+    @FXML private TableView<Order> EmployeeTable;
+    @FXML private TableColumn<Order, String> EmpIDCol2;
+    @FXML private TableColumn<Order, String> EmpNameCol;
+    @FXML private TableColumn<Order, String> EmpPositionCol;
+    @FXML private TableColumn<Order, String> EmpPasswordCol;
+    ObservableList<Order> EmployeeList = FXCollections.observableArrayList();
+
     // Branch Pane Members
+    @FXML private AnchorPane BranchPane;
+    @FXML private Label NewBranchLabel;
+    @FXML private Label DeleteBranchLabel;
+    @FXML private Label EditBranchLabel;
+    @FXML private TableView<Order> BranchTable;
+    @FXML private TableColumn<Order, String> BranchIDCol;
+    @FXML private TableColumn<Order, String> BranchNameCol;
+    @FXML private TableColumn<Order, String> BranchAddCol;
+    @FXML private TableColumn<Order, String> BranchPhoneCol;
+    ObservableList<Order> BranchList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
@@ -76,37 +106,96 @@ public class Controller implements Initializable {
         EditOrderLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         OrderFilterLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 12));
         OrderDateFilterLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 12));
-        OrderFilter.setPromptText("All");
-        OrderFilter.getItems().addAll("All", "Pending", "Done");
 
         // Initialize Product Pane
         NewProductLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         DeleteProductLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         EditProductLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         ProductFilterLabel.setFont(Font.loadFont("file:src/fonts/cocolight.ttf", 12));
-        FilterProduct.setPromptText("All");
-        FilterProduct.getItems().addAll("All", "Ascending", "Descending");
 
-        // Refresh Observable Lists
-        RefreshOrderTable();
-        RefreshProductList();
+        // Initialize Employee Pane
+        NewEmployeeLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+        DeleteEmployeeLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+        EditEmployeeLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+//        EmployeeFilterLabel.setFont(Font.loadFont("file:src/fonts/cocolight.ttf", 12));
+
+        // Initialize Branch Pane
+        NewBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+        DeleteBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+        EditBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+    }
+
+    public void initData(int settings){
+        Settings = settings;
+        OrderLabelClicked();
     }
 
     private void LabelDefault(){
         // Set Label Fonts
         OrderLabel.setFont(Font.loadFont("file:src/fonts/expressway.ttf", 20));
         ProductLabel.setFont(Font.loadFont("file:src/fonts/expressway.ttf", 20));
+        EmployeeLabel.setFont(Font.loadFont("file:src/fonts/expressway.ttf", 20));
+        BranchLabel.setFont(Font.loadFont("file:src/fonts/expressway.ttf", 20));
         // Set Label Colors
         OrderLabel.setTextFill(Paint.valueOf("9a9a9a"));
         ProductLabel.setTextFill(Paint.valueOf("9a9a9a"));
+        EmployeeLabel.setTextFill(Paint.valueOf("9a9a9a"));
+        BranchLabel.setTextFill(Paint.valueOf("9a9a9a"));
         // Set Rectangles Off
         OrderRectangle.setVisible(false);
         ProductRectangle.setVisible(false);
+        EmployeeRectangle.setVisible(false);
+        BranchRectangle.setVisible(false);
         // Set Panes Off
         OrderPane.setDisable(true);
         OrderPane.setVisible(false);
         ProductPane.setDisable(true);
         ProductPane.setVisible(false);
+        EmployeePane.setDisable(true);
+        EmployeePane.setVisible(false);
+        BranchPane.setDisable(true);
+        BranchPane.setVisible(false);
+
+        // Area Manager Settings
+        if (Settings == 1){
+        }
+        // Branch Manager Settings
+        else if (Settings == 2){
+            DisableBranchOptions();
+        }
+        // Cashier Options
+        else if (Settings == 3){
+            ProductOptionforCashiers();
+            DisableEmployeeOptions();
+            DisableBranchOptions();
+        }
+    }
+
+    private void ProductOptionforCashiers(){
+        NewProductLabel.setDisable(true);
+        NewProductLabel.setVisible(false);
+        DeleteProductLabel.setDisable(true);
+        DeleteProductLabel.setVisible(false);
+        EditProductLabel.setDisable(true);
+        EditProductLabel.setVisible(false);
+    }
+
+    private void DisableEmployeeOptions(){
+        EmployeeRectangle.setDisable(true);
+        EmployeeRectangle.setVisible(false);
+        EmployeeLabel.setDisable(true);
+        EmployeeLabel.setVisible(false);
+        EmployeePane.setDisable(true);
+        EmployeePane.setVisible(false);
+    }
+
+    private void DisableBranchOptions(){
+        BranchRectangle.setDisable(true);
+        BranchRectangle.setVisible(false);
+        BranchLabel.setDisable(true);
+        BranchLabel.setVisible(false);
+        BranchPane.setDisable(true);
+        BranchPane.setVisible(false);
     }
 
     @FXML
@@ -131,6 +220,30 @@ public class Controller implements Initializable {
         ProductPane.setVisible(true);
         new FadeIn(ProductPane).play();
         RefreshProductTable();
+    }
+
+    @FXML
+    public void EmployeeLabelClicked(){
+        LabelDefault();
+        EmployeeLabel.setTextFill(Paint.valueOf("#640e19"));
+        EmployeeRectangle.setVisible(true);
+        new FadeIn(EmployeeRectangle).play();
+        EmployeePane.setDisable(false);
+        EmployeePane.setVisible(true);
+        new FadeIn(EmployeePane).play();
+//        RefreshEmployeeTable();
+    }
+
+    @FXML
+    public void BranchLabelClicked(){
+        LabelDefault();
+        BranchLabel.setTextFill(Paint.valueOf("#640e19"));
+        BranchRectangle.setVisible(true);
+        new FadeIn(BranchRectangle).play();
+        BranchPane.setDisable(false);
+        BranchPane.setVisible(true);
+        new FadeIn(BranchPane).play();
+//        RefreshBranchTable();
     }
 
     // Order Pane Functions
@@ -215,12 +328,6 @@ public class Controller implements Initializable {
 
             Connection conn = Database.connect();
             String sql = "SELECT * FROM orders";
-            if (filter.equals("Pending")){
-                sql = "SELECT * FROM orders WHERE OrderStatus = 'Pending'";
-            } else if (filter.equals("Done")){
-                sql = "SELECT * FROM orders WHERE OrderStatus = 'Done'";
-            }
-
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
             int colNo = 1;
@@ -342,7 +449,7 @@ public class Controller implements Initializable {
 
             int colNo = 1;
             while (rs.next()) {
-                ProductList.add(new Product(colNo, rs.getString("product_id"), rs.getString("product_name"), rs.getInt("price")));
+                ProductList.add(new Product(colNo, rs.getString("product_id"), rs.getString("product_name"), Database.getType(rs.getString("TypeID")), rs.getInt("price")));
                 colNo++;
             }
 

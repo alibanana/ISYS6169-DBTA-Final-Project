@@ -36,7 +36,7 @@ public class EditProductFormController implements Initializable {
         System.out.println("Edit_Product_Button clicked in EditProductForm.fxml");
 
         // Query edits to the database
-        Database.editProduct(selectedProduct.getProductID(), productName.getText(), Integer.parseInt(productPrice.getText()));
+        Database.editProduct(selectedProduct.getProductID(), productName.getText(), Database.getTypeID(selectedProduct.getProductType()), Integer.parseInt(productPrice.getText()));
         System.out.println(String.format("Edited %s at the products", productName.getText()));
 
         // Close Stage & Refresh Table

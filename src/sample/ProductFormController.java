@@ -40,7 +40,7 @@ public class ProductFormController implements Initializable {
     public void addProduct(ActionEvent event) throws SQLException {
         System.out.println("Add_Product_Button clicked in ProductForm.fxml");
 
-        Database.addProduct(newProductID, productName.getText(), Integer.parseInt(productPrice.getText()));
+//        Database.addProduct(newProductID, productName.getText(),  Integer.parseInt(productPrice.getText()));
 
         // Close Stage & Refresh Table
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

@@ -4,12 +4,14 @@ public class Product {
     private int columnNo;
     private String ProductID;
     private String ProductName;
+    private String ProductType;
     private int Price;
 
-    public Product(int No, String productID, String productName, int price) {
+    public Product(int No, String productID, String productName, String productType, int price) {
         columnNo = No;
         ProductID = productID;
         ProductName = productName;
+        ProductType = productType;
         Price = price;
     }
 
@@ -35,6 +37,14 @@ public class Product {
 
     public void setProductName(String productName) {
         ProductName = productName;
+    }
+
+    public String getProductType() {
+        return ProductType;
+    }
+
+    public void setProductType(String productType) {
+        ProductType = productType;
     }
 
     public int getPrice() {
