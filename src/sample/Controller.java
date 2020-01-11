@@ -2,6 +2,7 @@ package sample;
 
 import animatefx.animation.FadeIn;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,6 +75,7 @@ public class Controller implements Initializable {
     @FXML private TableColumn<Product, Integer> ProdTypeCol;
     @FXML private TableColumn<Product, Integer> ProdPriceCol;
     ObservableList<Product> ProductList = FXCollections.observableArrayList();
+    public ArrayList<String> ProductTypeList = new ArrayList<>();
 
     // Employee Pane Members
     @FXML private AnchorPane EmployeePane;
@@ -132,6 +135,7 @@ public class Controller implements Initializable {
 
     public void initData(int settings){
         Settings = settings;
+        RefreshProductFilter();
         OrderLabelClicked();
     }
 
@@ -177,6 +181,7 @@ public class Controller implements Initializable {
     }
 
     private void ProductOptionforCashiers(){
+        System.out.println("Enable Product Option for Cashiers");
         NewProductLabel.setDisable(true);
         NewProductLabel.setVisible(false);
         DeleteProductLabel.setDisable(true);
@@ -186,6 +191,7 @@ public class Controller implements Initializable {
     }
 
     private void DisableEmployeeOptions(){
+        System.out.println("Disable Employee Options");
         EmployeeRectangle.setDisable(true);
         EmployeeRectangle.setVisible(false);
         EmployeeLabel.setDisable(true);
@@ -195,6 +201,7 @@ public class Controller implements Initializable {
     }
 
     private void DisableBranchOptions(){
+        System.out.println("Disable Branch Options");
         BranchRectangle.setDisable(true);
         BranchRectangle.setVisible(false);
         BranchLabel.setDisable(true);
@@ -205,6 +212,7 @@ public class Controller implements Initializable {
 
     @FXML
     public void OrderLabelClicked(){
+        System.out.println("OrderLabel clicked on MainScreen");
         LabelDefault();
         OrderLabel.setTextFill(Paint.valueOf("#640e19"));
         OrderRectangle.setVisible(true);
@@ -218,18 +226,22 @@ public class Controller implements Initializable {
 
     @FXML
     public void ProductLabelClicked(){
+        System.out.println("ProductLabel clicked on MainScreen");
         LabelDefault();
+        FilterProduct.setPromptText("Type: All");
         ProductLabel.setTextFill(Paint.valueOf("#640e19"));
         ProductRectangle.setVisible(true);
         new FadeIn(ProductRectangle).play();
         ProductPane.setDisable(false);
         ProductPane.setVisible(true);
         new FadeIn(ProductPane).play();
+        RefreshProductFilter();
         RefreshProductTable();
     }
 
     @FXML
     public void EmployeeLabelClicked(){
+        System.out.println("EmployeeLabel clicked on MainScreen");
         LabelDefault();
         EmployeeLabel.setTextFill(Paint.valueOf("#640e19"));
         EmployeeRectangle.setVisible(true);
@@ -243,6 +255,7 @@ public class Controller implements Initializable {
 
     @FXML
     public void BranchLabelClicked(){
+        System.out.println("BranchLabel clicked on MainScreen");
         LabelDefault();
         BranchLabel.setTextFill(Paint.valueOf("#640e19"));
         BranchRectangle.setVisible(true);
@@ -381,7 +394,7 @@ public class Controller implements Initializable {
     // Product Pane Functions
     @FXML
     public void NewProductClicked() throws IOException {
-        System.out.println("New_Product_Label clicked in MainScreen.fxml");
+        System.out.println("NewProductLabel clicked on MainScreen >> Product");
         new FadeIn(NewProductLabel).setSpeed(5).play();
 
         FXMLLoader loader = new FXMLLoader();
@@ -410,21 +423,38 @@ public class Controller implements Initializable {
 
     @FXML
     public void DeleteProductClicked(){
-        System.out.println("Delete_Product_Label clicked on MainScreen.fxml");
+        System.out.println("DeleteProductLabel clicked on MainScreen >> Product");
         new FadeIn(DeleteProductLabel).setSpeed(5).play();
 
         // Gets Selected Row
         Product selectedItem = ProductTable.getSelectionModel().getSelectedItem();
-        String id = selectedItem.getProductID();
-        if(!(selectedItem == null)){
-            Database.deleteProduct(id);
-            RefreshProductList();
+        String id = "";
+
+        // Checks if ProductFilter is selected
+        try {
+            id = selectedItem.getProductID();
+        } catch (NullPointerException e) {
+            System.out.println("No Product is Selected on ProductTable");
+        }
+
+        if(!id.equals("")){
+            try {
+                Database.deleteProduct(id);
+                // If TypeId exists in products
+                if (!(Database.isProductTypeExistInProduct(Database.getTypeID(selectedItem.getProductType())))){
+                    Database.deleteProductTypeByType(selectedItem.getProductType());
+                    RefreshProductFilter();
+                }
+                RefreshProductTable();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @FXML
-    public void EditProductClicked() throws IOException {
-        System.out.println("Edit_Product_Label clicked on MainScreen.fxml");
+    public void EditProductClicked() throws IOException, SQLException {
+        System.out.println("EditProductLabel clicked on MainScreen >> Product");
         new FadeIn(EditProductLabel).setSpeed(5).play();
 
         FXMLLoader loader = new FXMLLoader();
@@ -446,17 +476,26 @@ public class Controller implements Initializable {
         stage.showAndWait();
     }
 
-    public void RefreshProductList(){
+    public void RefreshProductFilter(){
+        FilterProduct.getItems().clear();
+        ProductTypeList = Database.getAllTypes();
+        ProductTypeList.add(0, "All");
+        FilterProduct.setItems(FXCollections.observableArrayList(ProductTypeList));
+        System.out.println("ProductFilter refreshed in MainScreen >> Product");
+    }
+
+    public void RefreshProductList() {
         ProductList.clear();
-        String filter, sql;
         try {
+            String filter, sql;
             try {
                 filter = FilterProduct.getValue().toString();
                 // If user choose a specific filter
-                if (filter.equals("Descending")) {
-                    sql = String.format("SELECT * FROM products ORDER BY product_name DESC");
+                if (filter.equals("All")) {
+                    sql = String.format("SELECT * FROM products");
                 } else {
-                    sql = "SELECT * FROM products";
+                    String TypeID = Database.getTypeID(filter);
+                    sql = String.format("SELECT * FROM products WHERE TypeID = '%s'", TypeID);
                 }
             } catch (NullPointerException e) {
                 sql = "SELECT * FROM products";
@@ -467,24 +506,18 @@ public class Controller implements Initializable {
 
             int colNo = 1;
             while (rs.next()) {
-                ProductList.add(new Product(colNo, rs.getString("product_id"), rs.getString("product_name"), Database.getType(rs.getString("TypeID")), rs.getInt("price")));
+                ProductList.add(new Product(colNo, rs.getString("product_id"), rs.getString("product_name"),
+                        Database.getType(rs.getString("TypeID")), rs.getInt("price")));
                 colNo++;
             }
 
             rs.close();
             conn.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        ProdNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
-        ProdIDCol.setCellValueFactory(new PropertyValueFactory<>("ProductID"));
-        ProdNameCol.setCellValueFactory(new PropertyValueFactory<>("ProductName"));
-        ProdTypeCol.setCellValueFactory(new PropertyValueFactory<>("ProductType"));
-        ProdPriceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
-        ProductTable.setItems(ProductList);
     }
 
-    @FXML
     public void RefreshProductTable() throws NullPointerException{
         RefreshProductList();
         ProdNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
@@ -493,6 +526,7 @@ public class Controller implements Initializable {
         ProdTypeCol.setCellValueFactory(new PropertyValueFactory<>("ProductType"));
         ProdPriceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
         ProductTable.setItems(ProductList);
+        System.out.println("ProductTable refreshed on MainScreen >> Product");
     }
 
     // Employee Pane Functions
