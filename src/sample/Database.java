@@ -50,7 +50,7 @@ public class Database {
             String sql = String.format("DELETE FROM product_type where TypeID = '%s'", TypeID);
             stmt.execute(sql);
 
-            System.out.println(String.format("Deleted %s from product_type", TypeID));
+            System.out.println(String.format("Deleted TypeID = %s from product_type", TypeID));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class Database {
             String sql = String.format("DELETE FROM product_type where Type = '%s'", Type);
             stmt.execute(sql);
 
-            System.out.println(String.format("Deleted %s from product_type", Type));
+            System.out.println(String.format("Deleted Type = %s from product_type", Type));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -160,11 +160,11 @@ public class Database {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "INSERT INTO products(product_id, product_name, type_id, price)) VALUE('%s', '%s', '%s', '%d')";
+            String sql = "INSERT INTO products(product_id, product_name, TypeID, price) VALUE('%s', '%s', '%s', '%d')";
             sql = String.format(sql, product_id, product_name, type_id, price);
             stmt.execute(sql);
 
-            System.out.println(String.format("Added %s to product", product_id));
+            System.out.println(String.format("Added %s to products database", product_id));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,10 +175,11 @@ public class Database {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "UPDATE products SET product_name='%s', type_id='%s', price='%d' WHERE product_id='%s'";
+            String sql = "UPDATE products SET product_name='%s', TypeID='%s', price='%d' WHERE product_id='%s'";
             sql = String.format(sql, product_name, type_id, price, product_id);
             stmt.execute(sql);
 
+            System.out.println(String.format("Edited %s in products database", product_id));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -234,10 +235,10 @@ public class Database {
         }
 
         if (counter != 0) {
-            System.out.println(String.format("TypeID %s exists in products", TypeID));
+            System.out.println(String.format("TypeID %s exists in products database", TypeID));
             return true;
         } else {
-            System.out.println(String.format("TypeID %s doesn't exists in product_type", TypeID));
+            System.out.println(String.format("TypeID %s doesn't exists in products database", TypeID));
             return false;
         }
     }
