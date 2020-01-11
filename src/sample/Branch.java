@@ -1,16 +1,26 @@
 package sample;
 
 public class Branch {
+    private int columnNo;
     private String BranchID;
     private String BranchName;
     private String Address;
     private String Phone;
 
-    public Branch(String branchID, String branchName, String address, String phone){
+    public Branch(int No, String branchID, String branchName, String address, String phone){
+        columnNo = No;
         BranchID = branchID;
         BranchName = branchName;
         Address = address;
         Phone = phone;
+    }
+
+    public int getColumnNo() {
+        return columnNo;
+    }
+
+    public void setColumnNo(int columnNo) {
+        this.columnNo = columnNo;
     }
 
     public String getBranchID() {

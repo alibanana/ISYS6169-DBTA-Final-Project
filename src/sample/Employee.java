@@ -1,18 +1,36 @@
 package sample;
 
 public class Employee {
+    private int columnNo;
     private String EmployeeID;
     private String EmployeeName;
     private String Password;
-    private String PositionID;
-    private String BranchID;
+    private String Position;
+    private String Branch;
 
-    public Employee(String employeeID, String employeeName, String password, String positionID, String branchID) {
+    public Employee(int No, String employeeID, String employeeName, String password, String position, String branch) {
+        columnNo = No;
         EmployeeID = employeeID;
         EmployeeName = employeeName;
         Password = password;
-        PositionID = positionID;
-        BranchID = branchID;
+        Position = position;
+        Branch = branch;
+    }
+
+//    public Employee(int No, String employeeID, String employeeName, String password, String position) {
+//        columnNo = No;
+//        EmployeeID = employeeID;
+//        EmployeeName = employeeName;
+//        Password = password;
+//        Position = position;
+//    }
+
+    public int getColumnNo() {
+        return columnNo;
+    }
+
+    public void setColumnNo(int columnNo) {
+        this.columnNo = columnNo;
     }
 
     public String getEmployeeID() {
@@ -39,19 +57,19 @@ public class Employee {
         Password = password;
     }
 
-    public String getPositionID() {
-        return PositionID;
+    public String getPosition() {
+        return Position;
     }
 
-    public void setPositionID(String positionID) {
-        PositionID = positionID;
+    public void setPosition(String position) {
+        Position = position;
     }
 
-    public String getBranchID() {
-        return BranchID;
+    public String getBranch() {
+        return Branch;
     }
 
-    public void setBranchID(String branchID) {
-        BranchID = branchID;
+    public void setBranch(String branch) {
+        Branch = branch;
     }
 }

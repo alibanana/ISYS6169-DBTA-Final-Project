@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1074.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1074.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <AnchorPane prefHeight="700.0" prefWidth="166.0" style="-fx-background-color: #ffffff;">
          <children>
@@ -46,12 +51,12 @@
             <Rectangle fx:id="BranchRectangle" arcHeight="5.0" arcWidth="5.0" fill="#640e19" height="57.0" layoutY="323.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="5.0" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="OrderPane" layoutX="166.0" prefHeight="700.0" prefWidth="1034" visible="false">
+      <AnchorPane fx:id="OrderPane" layoutX="166.0" prefHeight="700.0" prefWidth="1034">
          <children>
             <TableView fx:id="OrderTable" layoutX="28.0" layoutY="79.0" prefHeight="559.0" prefWidth="850.0">
               <columns>
                 <TableColumn fx:id="OrdIDCol" prefWidth="164.0" resizable="false" text="Order ID" />
-                  <TableColumn fx:id="EmpIDCol" prefWidth="148.0" resizable="false" text="Employee" />
+                  <TableColumn fx:id="OrdEmpIDCol" prefWidth="148.0" resizable="false" text="Employee" />
                   <TableColumn fx:id="OrdDateCol" prefWidth="171.0" resizable="false" text="Date" />
                   <TableColumn fx:id="BranchCol" prefWidth="141.0" resizable="false" text="Branch" />
                   <TableColumn fx:id="OrdTotalCol" prefWidth="225.0" resizable="false" text="Total" />
@@ -128,15 +133,16 @@
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="EmployeePane" layoutX="171.0" prefHeight="700.0" prefWidth="900.0">
+      <AnchorPane fx:id="EmployeePane" layoutX="171.0" prefHeight="700.0" prefWidth="900.0" visible="false">
          <children>
             <TableView fx:id="EmployeeTable" layoutX="28.0" layoutY="69.0" prefHeight="569.0" prefWidth="850.0">
                <columns>
-                  <TableColumn fx:id="ProdNoCol1" prefWidth="43.0" resizable="false" text="#" />
-                  <TableColumn fx:id="EmpIDCol" prefWidth="134.0" resizable="false" text="Employee ID" />
-                  <TableColumn fx:id="EmpNameCol" prefWidth="273.0" resizable="false" text="Name" />
-                  <TableColumn fx:id="EmpPositionCol" minWidth="0.0" prefWidth="192.0" resizable="false" text="Position" />
-                  <TableColumn fx:id="EmpPasswordCol" maxWidth="308.0" minWidth="0.0" prefWidth="207.0" resizable="false" text="Password" />
+                  <TableColumn fx:id="EmpNoCol" prefWidth="35.0" resizable="false" text="#" />
+                  <TableColumn fx:id="EmpIDCol" prefWidth="121.0" resizable="false" text="Employee ID" />
+                  <TableColumn fx:id="EmpNameCol" prefWidth="182.0" resizable="false" text="Name" />
+                  <TableColumn fx:id="EmpPositionCol" minWidth="0.0" prefWidth="169.0" resizable="false" text="Position" />
+                  <TableColumn fx:id="EmpPasswordCol" maxWidth="323.0" minWidth="0.0" prefWidth="169.0" resizable="false" text="Password" />
+                  <TableColumn fx:id="EmpBranchCol" maxWidth="199.0" minWidth="0.0" prefWidth="173.0" resizable="false" text="Branch" />
                </columns>
             </TableView>
             <Label layoutX="28.0" layoutY="21.0" text="Employee">
@@ -144,22 +150,22 @@
                   <Font name="Arial Bold" size="26.0" />
                </font>
             </Label>
-            <Label fx:id="NewEmployeeLabel" layoutX="740.0" layoutY="26.0" onMouseClicked="#NewProductClicked" text="+ New Employee" textFill="#5596fd">
+            <Label fx:id="NewEmployeeLabel" layoutX="740.0" layoutY="26.0" onMouseClicked="#NewEmployeeClicked" text="+ New Employee" textFill="#5596fd">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>
             </Label>
-            <Label fx:id="DeleteEmployeeLabel" layoutX="728.0" layoutY="655.0" onMouseClicked="#DeleteProductClicked" text="- Delete Employee" textFill="#ff1818">
+            <Label fx:id="DeleteEmployeeLabel" layoutX="728.0" layoutY="655.0" onMouseClicked="#DeleteEmployeeClicked" text="- Delete Employee" textFill="#ff1818">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>
             </Label>
-            <Label fx:id="EditEmployeeLabel" layoutX="27.0" layoutY="655.0" onMouseClicked="#EditProductClicked" text="Edit Employee" textFill="#684efc">
+            <Label fx:id="EditEmployeeLabel" layoutX="27.0" layoutY="655.0" onMouseClicked="#EditEmployeeClicked" text="Edit Employee" textFill="#684efc">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>
             </Label>
-            <ComboBox fx:id="EmployeeFilter" layoutX="171.0" layoutY="29.0" onAction="#RefreshProductTable" prefHeight="31.0" prefWidth="184.0" style="-fx-background-color: #D1D1D1;" />
+            <ComboBox fx:id="EmployeeFilter" layoutX="171.0" layoutY="29.0" onAction="#RefreshEmployeeList" prefHeight="31.0" prefWidth="184.0" style="-fx-background-color: #D1D1D1;" />
             <Label fx:id="EmployeeFilterLabel1" layoutX="171.0" layoutY="12.0" onMouseClicked="#NewOrderClicked" text="Filter" textFill="#5596fd">
                <font>
                   <Font name="Arial" size="12.0" />
@@ -183,17 +189,17 @@
                   <Font name="Arial Bold" size="26.0" />
                </font>
             </Label>
-            <Label fx:id="NewBranchLabel" layoutX="763.0" layoutY="36.0" onMouseClicked="#NewProductClicked" text="+ New Branch" textFill="#5596fd">
+            <Label fx:id="NewBranchLabel" layoutX="763.0" layoutY="26.0" onMouseClicked="#NewBranchClicked" text="+ New Branch" textFill="#5596fd">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>
             </Label>
-            <Label fx:id="DeleteBranchLabel" layoutX="728.0" layoutY="655.0" onMouseClicked="#DeleteProductClicked" text="- Delete Employee" textFill="#ff1818">
+            <Label fx:id="DeleteBranchLabel" layoutX="728.0" layoutY="655.0" onMouseClicked="#DeleteBranchClicked" text="- Delete Branch" textFill="#ff1818">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>
             </Label>
-            <Label fx:id="EditBranchLabel" layoutX="27.0" layoutY="655.0" onMouseClicked="#EditProductClicked" text="Edit Branch" textFill="#684efc">
+            <Label fx:id="EditBranchLabel" layoutX="27.0" layoutY="655.0" onMouseClicked="#EditBranchClicked" text="Edit Branch" textFill="#684efc">
                <font>
                   <Font name="Arial" size="18.0" />
                </font>

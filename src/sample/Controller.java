@@ -22,6 +22,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,11 +52,12 @@ public class Controller implements Initializable {
     @FXML private Label OrderDateFilterLabel;
     @FXML private TableView<Order> OrderTable;
     @FXML private TableColumn<Order, String> OrdIDCol;
-    @FXML private TableColumn<Order, String> EmpIDCol;
+    @FXML private TableColumn<Order, String> OrdEmpIDCol;
     @FXML private TableColumn<Order, String> OrdDateCol;
     @FXML private TableColumn<Order, String> BranchCol;
     @FXML private TableColumn<Order, Integer> OrdTotalCol;
     ObservableList<Order> OrderList = FXCollections.observableArrayList();
+    public HashMap<String, String> AllBranch;
 
     // Product Pane Members
     @FXML private AnchorPane ProductPane;
@@ -79,24 +81,28 @@ public class Controller implements Initializable {
     @FXML private Label EditEmployeeLabel;
     @FXML private ComboBox EmployeeFilter;
     @FXML private Label EmployeeFilterLabel;
-    @FXML private TableView<Order> EmployeeTable;
-    @FXML private TableColumn<Order, String> EmpIDCol2;
+    @FXML private TableView<Employee> EmployeeTable;
+    @FXML private TableColumn<Order, Integer> EmpNoCol;
+    @FXML private TableColumn<Order, String> EmpIDCol;
     @FXML private TableColumn<Order, String> EmpNameCol;
     @FXML private TableColumn<Order, String> EmpPositionCol;
     @FXML private TableColumn<Order, String> EmpPasswordCol;
-    ObservableList<Order> EmployeeList = FXCollections.observableArrayList();
+    @FXML private TableColumn<Order, String> EmpBranchCol;
+    ObservableList<Employee> EmployeeList = FXCollections.observableArrayList();
+    public HashMap<String, String> AllPosition;
 
     // Branch Pane Members
     @FXML private AnchorPane BranchPane;
     @FXML private Label NewBranchLabel;
     @FXML private Label DeleteBranchLabel;
     @FXML private Label EditBranchLabel;
-    @FXML private TableView<Order> BranchTable;
+    @FXML private TableView<Branch> BranchTable;
+    @FXML private TableColumn<Order, String> BranchNoCol;
     @FXML private TableColumn<Order, String> BranchIDCol;
     @FXML private TableColumn<Order, String> BranchNameCol;
     @FXML private TableColumn<Order, String> BranchAddCol;
     @FXML private TableColumn<Order, String> BranchPhoneCol;
-    ObservableList<Order> BranchList = FXCollections.observableArrayList();
+    ObservableList<Branch> BranchList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
@@ -117,7 +123,6 @@ public class Controller implements Initializable {
         NewEmployeeLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         DeleteEmployeeLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         EditEmployeeLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
-//        EmployeeFilterLabel.setFont(Font.loadFont("file:src/fonts/cocolight.ttf", 12));
 
         // Initialize Branch Pane
         NewBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
@@ -208,6 +213,7 @@ public class Controller implements Initializable {
         OrderPane.setVisible(true);
         new FadeIn(OrderPane).play();
         RefreshOrderTable();
+        RefreshOrderFilter(1);
     }
 
     @FXML
@@ -231,7 +237,8 @@ public class Controller implements Initializable {
         EmployeePane.setDisable(false);
         EmployeePane.setVisible(true);
         new FadeIn(EmployeePane).play();
-//        RefreshEmployeeTable();
+        RefreshEmployeeTable();
+        RefreshEmployeeFilter(1);
     }
 
     @FXML
@@ -243,7 +250,7 @@ public class Controller implements Initializable {
         BranchPane.setDisable(false);
         BranchPane.setVisible(true);
         new FadeIn(BranchPane).play();
-//        RefreshBranchTable();
+        RefreshBranchTable();
     }
 
     // Order Pane Functions
@@ -342,7 +349,7 @@ public class Controller implements Initializable {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
         }
         OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("order_id"));
-        EmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
+        OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
         OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
         BranchCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("total"));
@@ -353,11 +360,22 @@ public class Controller implements Initializable {
     public void RefreshOrderTable() throws NullPointerException{
         RefreshOrderList();
         OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("order_id"));
-        EmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
+        OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
         OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
         BranchCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("total"));
         OrderTable.setItems(OrderList);
+    }
+
+    public void RefreshOrderFilter(int settings){
+//        OrderFilter.getItems().clear();
+        AllBranch = Database.getAllBranch();
+        // Setting == 1 is for Filter Settings
+        if(settings == 1){
+            AllBranch.put("All", "0");
+        }
+//        OrderFilter.setItems(FXCollections.observableArrayList(AllBranch.keySet()));
+        System.out.println("Refreshed OrderFilter in Mainscreen.fxml");
     }
 
     // Product Pane Functions
@@ -475,5 +493,248 @@ public class Controller implements Initializable {
         ProdTypeCol.setCellValueFactory(new PropertyValueFactory<>("ProductType"));
         ProdPriceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
         ProductTable.setItems(ProductList);
+    }
+
+    // Employee Pane Functions
+    @FXML
+    public void NewEmployeeClicked() throws IOException {
+        System.out.println("New_Employee_Label clicked in MainScreen.fxml");
+        new FadeIn(NewEmployeeLabel).setSpeed(5).play();
+
+        // For removing "All" value in Position ComboBox
+        RefreshEmployeeFilter(0);
+        RefreshOrderFilter(0);
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("EmployeeForm.fxml"));
+        Parent EmployeeFormParent = loader.load();
+
+        Stage stage = new Stage(); // New stage (window)
+
+        // Get CurrentEmployeeID; if no Employee exist yet prevEmployeeID set to 0
+        String prevEmployeeID = "EMP00000";
+        if (!EmployeeList.isEmpty()){
+            prevEmployeeID = EmployeeList.get(EmployeeList.size()-1).getEmployeeID();
+        }
+
+        // Passing data to EmployeeFormController
+        EmployeeFormController controller = loader.getController();
+        controller.initData(this, prevEmployeeID, AllPosition, AllBranch);
+
+        // Setting the stage up
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setTitle("New Employee Form");
+        stage.setScene(new Scene(EmployeeFormParent));
+        stage.showAndWait();
+    }
+
+    @FXML
+    public void DeleteEmployeeClicked(){
+        System.out.println("Delete_Employee_Label clicked on MainScreen.fxml");
+        new FadeIn(DeleteEmployeeLabel).setSpeed(5).play();
+
+        // Gets Selected Row
+        Employee selectedItem = EmployeeTable.getSelectionModel().getSelectedItem();
+        String id = selectedItem.getEmployeeID();
+        if(!(selectedItem == null)){
+            Database.deleteEmployee(id);
+            RefreshEmployeeList();
+        }
+    }
+
+    @FXML
+    public void EditEmployeeClicked() throws IOException {
+        System.out.println("Edit_Employee_Label clicked on MainScreen.fxml");
+        new FadeIn(EditEmployeeLabel).setSpeed(5).play();
+
+        // For removing "All" value in Position and Branch ComboBox
+        RefreshEmployeeFilter(0);
+        RefreshOrderFilter(0);
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("EditEmployeeForm.fxml"));
+        Parent EmployeeFormParent = loader.load();
+
+        Stage stage = new Stage(); // New stage (window)
+
+        // Passing data to EditEmployeeFormController
+        EditEmployeeFormController controller = loader.getController();
+        Employee selectedEmployee = EmployeeTable.getSelectionModel().getSelectedItem();
+        controller.initData(this, selectedEmployee, AllPosition, AllBranch);
+
+        // Setting the stage up
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setTitle("Edit Employee Form");
+        stage.setScene(new Scene(EmployeeFormParent));
+        stage.showAndWait();
+    }
+
+    public void RefreshEmployeeFilter(int settings){
+        EmployeeFilter.getItems().clear();
+        AllPosition = Database.getAllPosition();
+        if(settings == 1){
+            AllPosition.put("All", "0");
+        }
+        EmployeeFilter.setItems(FXCollections.observableArrayList(AllPosition.keySet()));
+        System.out.println("Refreshed EmployeeFilter in Mainscreen.fxml");
+    }
+
+    public void RefreshEmployeeList(){
+        try {
+            EmployeeList.clear();
+            String filter, sql;
+            // Checks if ComboBox is empty
+            try {
+                filter = EmployeeFilter.getValue().toString();
+                if(filter.equals("All")){
+                    sql = "SELECT * FROM employee";
+                }
+                else {
+                    String positionID = AllPosition.get(filter);
+                    sql = String.format("SELECT * FROM employee WHERE position_id = '%s'", positionID);
+                }
+            } catch (NullPointerException e) {
+                sql = "SELECT * FROM employee";
+            }
+
+            Connection conn = Database.connect();
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            int colNo = 1;
+            while(rs.next()) {
+                if (rs.getString("branch_id").equals("")){
+                    EmployeeList.add(new Employee(colNo, rs.getString("employee_id"), rs.getString("employee_name"), rs.getString("password"), Database.getPositionName(rs.getString("position_id")), "All"));
+                } else {
+                    EmployeeList.add(new Employee(colNo, rs.getString("employee_id"), rs.getString("employee_name"), rs.getString("password"), Database.getPositionName(rs.getString("position_id")), Database.getBranchName(rs.getString("branch_id"))));
+                }
+                colNo++;
+            }
+
+            rs.close();
+            conn.close();
+        } catch (SQLException e) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    @FXML
+    public void RefreshEmployeeTable() throws NullPointerException{
+        RefreshEmployeeList();
+        EmpNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
+        EmpIDCol.setCellValueFactory(new PropertyValueFactory<>("EmployeeID"));
+        EmpNameCol.setCellValueFactory(new PropertyValueFactory<>("EmployeeName"));
+        EmpPasswordCol.setCellValueFactory(new PropertyValueFactory<>("Password"));
+        EmpPositionCol.setCellValueFactory(new PropertyValueFactory<>("Position"));
+        EmpBranchCol.setCellValueFactory(new PropertyValueFactory<>("Branch"));
+        EmployeeTable.setItems(EmployeeList);
+    }
+
+    // Branch Pane Functions
+    @FXML
+    public void NewBranchClicked() throws IOException {
+        System.out.println("New_Branch_Label clicked in MainScreen.fxml");
+        new FadeIn(NewBranchLabel).setSpeed(5).play();
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("BranchForm.fxml"));
+        Parent BranchFormParent = loader.load();
+
+        Stage stage = new Stage(); // New stage (window)
+
+        // Get CurrentBranchID; if no Branch exist yet prevBranchID set to 0
+        String prevBranchID = "BRC00000";
+        if (!BranchList.isEmpty()){
+            prevBranchID = BranchList.get(BranchList.size()-1).getBranchID();
+        }
+
+        // Passing data to BranchFormController
+        BranchFormController controller = loader.getController();
+        controller.initData(this, prevBranchID);
+
+        // Setting the stage up
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setTitle("New Branch Form");
+        stage.setScene(new Scene(BranchFormParent));
+        stage.showAndWait();
+    }
+
+    @FXML
+    public void DeleteBranchClicked(){
+        System.out.println("Delete_Branch_Label clicked on MainScreen.fxml");
+        new FadeIn(DeleteBranchLabel).setSpeed(5).play();
+
+        // Gets Selected Row
+        Branch selectedItem = BranchTable.getSelectionModel().getSelectedItem();
+        String id = selectedItem.getBranchID();
+        if(!(selectedItem == null)){
+            Database.deleteBranch(id);
+            RefreshBranchList();
+        }
+    }
+
+    @FXML
+    public void EditBranchClicked() throws IOException {
+        System.out.println("Edit_Branch_Label clicked on MainScreen.fxml");
+        new FadeIn(EditBranchLabel).setSpeed(5).play();
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("EditBranchForm.fxml"));
+        Parent BranchFormParent = loader.load();
+
+        Stage stage = new Stage(); // New stage (window)
+
+        // Passing data to EditBranchFormController
+        EditBranchFormController controller = loader.getController();
+        Branch selectedBranch = BranchTable.getSelectionModel().getSelectedItem();
+        controller.initData(this, selectedBranch);
+
+        // Setting the stage up
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setTitle("Edit Branch Form");
+        stage.setScene(new Scene(BranchFormParent));
+        stage.showAndWait();
+    }
+
+    public void RefreshBranchList(){
+        BranchList.clear();
+        String sql;
+        try {
+            sql = "SELECT * FROM branch";
+
+            Connection conn = Database.connect();
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            int colNo = 1;
+            while (rs.next()) {
+                BranchList.add(new Branch(colNo, rs.getString("branch_id"), rs.getString("branch_name"), rs.getString("address"), rs.getString("phone")));
+                colNo++;
+            }
+
+            rs.close();
+            conn.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        BranchNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
+        BranchIDCol.setCellValueFactory(new PropertyValueFactory<>("BranchID"));
+        BranchNameCol.setCellValueFactory(new PropertyValueFactory<>("BranchName"));
+        BranchAddCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        BranchPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        BranchTable.setItems(BranchList);
+    }
+
+    @FXML
+    public void RefreshBranchTable() throws NullPointerException{
+        RefreshBranchList();
+        BranchNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
+        BranchIDCol.setCellValueFactory(new PropertyValueFactory<>("BranchID"));
+        BranchNameCol.setCellValueFactory(new PropertyValueFactory<>("BranchName"));
+        BranchAddCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        BranchPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        BranchTable.setItems(BranchList);
     }
 }

@@ -46,7 +46,6 @@ public class BranchFormController implements Initializable {
         // Close Stage & Refresh Table
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
-//        parentController.RefrestBranchTable();
+        parentController.RefreshBranchTable();
     }
-
 }

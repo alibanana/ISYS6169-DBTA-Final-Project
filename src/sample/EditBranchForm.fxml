@@ -13,7 +13,7 @@
       <Accordion layoutX="118.0" layoutY="154.0" />
       <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="62.0" prefWidth="572.0" style="-fx-background-color: #640e19; -fx-background-radius: 10;">
          <children>
-            <Label layoutX="212.0" layoutY="16.0" text="Add Branch" textFill="WHITE">
+            <Label layoutX="213.0" layoutY="16.0" text="Edit Branch" textFill="WHITE">
                <font>
                   <Font name="Arial Bold" size="26.0" />
                </font>
@@ -25,10 +25,10 @@
             <Label layoutX="86.0" layoutY="34.0" text="Name" />
             <Label layoutX="79.0" layoutY="68.0" text="Address" />
             <TextField fx:id="branchName" layoutX="143.0" layoutY="29.0" prefHeight="31.0" prefWidth="343.0" />
+            <TextArea fx:id="address" layoutX="143.0" layoutY="68.0" prefHeight="129.0" prefWidth="343.0" />
+            <TextField fx:id="phone" layoutX="146.0" layoutY="206.0" prefHeight="31.0" prefWidth="343.0" />
             <Button fx:id="addEmployeeButton" layoutX="431.0" layoutY="253.0" mnemonicParsing="false" onAction="#editBranch" prefHeight="31.0" prefWidth="127.0" style="-fx-background-color: #00ab66;" text="+ Edit Branch" textFill="WHITE" />
             <Label layoutX="83.0" layoutY="213.0" text="Phone" />
-            <TextField fx:id="phone" layoutX="146.0" layoutY="206.0" prefHeight="31.0" prefWidth="343.0" />
-            <TextArea fx:id="address" layoutX="143.0" layoutY="68.0" prefHeight="129.0" prefWidth="343.0" />
          </children>
       </AnchorPane>
    </children>

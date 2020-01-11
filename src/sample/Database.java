@@ -5,13 +5,14 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Database {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost/21_dbta";
     static final String USER = "root";
-    static final String PASS = "2201798295Binus";
-//    static final String PASS = "";
+//    static final String PASS = "2201798295Binus";
+    static final String PASS = "";
     static Connection conn;
     static Statement stmt;
     static ResultSet rs;
@@ -24,6 +25,22 @@ public class Database {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static HashMap<String, String> getAllPosition() throws NullPointerException {
+        HashMap<String, String> listofPosition = new HashMap<>();
+        try {
+            conn = connect();
+            String sql = "SELECT position_id, position_name FROM position";
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            while (rs.next()){
+                listofPosition.put(rs.getString("position_name"), rs.getString("position_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listofPosition;
     }
 
     // Product Queries
@@ -300,6 +317,7 @@ public class Database {
     }
 
     // Branch Queries
+
     public static void addBranch(String branch_id, String branch_name, String address, String phone){
         try {
             conn = connect();
@@ -340,13 +358,29 @@ public class Database {
         }
     }
 
+    public static HashMap<String, String> getAllBranch() throws NullPointerException {
+        HashMap<String, String> listofBranch = new HashMap<>();
+        try {
+            conn = connect();
+            String sql = "SELECT branch_id, branch_name FROM branch";
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+
+            while (rs.next()){
+                listofBranch.put(rs.getString("branch_name"), rs.getString("branch_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listofBranch;
+    }
+
     // Employee Queries
     public static void addEmployee(String employee_id, String employee_name, String password, String position_id, String branch_id){
         try {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "INSERT INTO employee(employee_id, employee_name, password, position_id, branch_id) VALUE('%s', '%s', '%s', '%s', '%s)";
+            String sql = "INSERT INTO employee(employee_id, employee_name, password, position_id, branch_id) VALUE('%s', '%s', '%s', '%s', '%s')";
             sql = String.format(sql, employee_id, employee_name, password, position_id, branch_id);
             stmt.execute(sql);
 
@@ -384,11 +418,55 @@ public class Database {
     public static String getEmployeeName(String EmployeeID) throws SQLException{
         conn = connect();
 
-        String sql = "SELECT employee_ name FROM employee WHERE employee_id = '%s'";
+        String sql = "SELECT employee_name FROM employee WHERE employee_id = '%s'";
         sql = String.format(sql, EmployeeID);
         ResultSet rs = conn.createStatement().executeQuery(sql);
 
         rs.next();
         return rs.getString("employee_id");
+    }
+
+    public static String getPositionName(String PositionID) throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT position_name FROM position WHERE position_id = '%s'";
+        sql = String.format(sql, PositionID);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("position_name");
+    }
+
+    public static String getBranchName(String BranchID) throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT branch_name FROM branch WHERE branch_id = '%s'";
+        sql = String.format(sql, BranchID);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("branch_name");
+    }
+
+    public static String getPositionID(String PositionName) throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT position_id FROM position WHERE position_name = '%s'";
+        sql = String.format(sql, PositionName);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("position_id");
+    }
+
+    public static String getBranchID(String BranchName) throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT branch_id FROM branch WHERE branch_name = '%s'";
+        sql = String.format(sql, BranchName);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("branch_id");
     }
 }

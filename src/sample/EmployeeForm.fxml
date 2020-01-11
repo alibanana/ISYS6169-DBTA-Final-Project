@@ -29,8 +29,8 @@
             <Button fx:id="addEmployeeButton" layoutX="431.0" layoutY="225.0" mnemonicParsing="false" onAction="#addEmployee" prefHeight="31.0" prefWidth="127.0" style="-fx-background-color: #00ab66;" text="+ Add Employee" textFill="WHITE" />
             <Label layoutX="72.0" layoutY="122.0" text="Position" />
             <Label layoutX="80.0" layoutY="168.0" text="Branch" />
-            <TextField fx:id="branch" layoutX="143.0" layoutY="161.0" prefHeight="31.0" prefWidth="343.0" />
             <ComboBox fx:id="position" layoutX="143.0" layoutY="115.0" prefHeight="31.0" prefWidth="343.0" />
+            <ComboBox fx:id="branch" layoutX="143.0" layoutY="161.0" prefHeight="31.0" prefWidth="343.0" />
          </children>
       </AnchorPane>
    </children>
