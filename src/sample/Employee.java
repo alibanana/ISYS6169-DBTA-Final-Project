@@ -8,6 +8,9 @@ public class Employee {
     private String Position;
     private String Branch;
 
+    private String PositionID;
+    private String BranchID;
+
     public Employee(int No, String employeeID, String employeeName, String password, String position, String branch) {
         columnNo = No;
         EmployeeID = employeeID;
@@ -17,13 +20,14 @@ public class Employee {
         Branch = branch;
     }
 
-//    public Employee(int No, String employeeID, String employeeName, String password, String position) {
-//        columnNo = No;
-//        EmployeeID = employeeID;
-//        EmployeeName = employeeName;
-//        Password = password;
-//        Position = position;
-//    }
+    public Employee(String employeeID, String employeeName, String password, String positionID, String branchID) {
+        EmployeeID = employeeID;
+        EmployeeName = employeeName;
+        Password = password;
+        PositionID = positionID;
+        BranchID = branchID;
+    }
+
 
     public int getColumnNo() {
         return columnNo;
@@ -71,5 +75,21 @@ public class Employee {
 
     public void setBranch(String branch) {
         Branch = branch;
+    }
+
+    public String getPositionID() {
+        return PositionID;
+    }
+
+    public void setPositionID(String positionID) {
+        PositionID = positionID;
+    }
+
+    public String getBranchID() {
+        return BranchID;
+    }
+
+    public void setBranchID(String branchID) {
+        BranchID = branchID;
     }
 }

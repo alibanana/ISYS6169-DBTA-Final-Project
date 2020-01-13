@@ -2,11 +2,12 @@ package sample;
 
 import animatefx.animation.FadeIn;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -30,7 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Controller implements Initializable {
-    // Settins Options
+    // Employee & Settings
+    Employee user;
     int Settings;
 
     // Sidebar Pane Members
@@ -42,6 +44,7 @@ public class Controller implements Initializable {
     @FXML private Rectangle ProductRectangle;
     @FXML private Rectangle EmployeeRectangle;
     @FXML private Rectangle BranchRectangle;
+    @FXML private Label LogOutLabel;
 
     // Order Pane Members
     @FXML private AnchorPane OrderPane;
@@ -131,10 +134,16 @@ public class Controller implements Initializable {
         NewBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         DeleteBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
         EditBranchLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
+
+        LogOutLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
     }
 
-    public void initData(int settings){
-        Settings = settings;
+    public void initData(Employee employee){
+        user = employee;
+
+        // Set Settings
+        Settings = Integer.parseInt(user.getPositionID().replaceAll("[^\\d.]", ""));
+
         RefreshProductFilter();
         OrderLabelClicked();
     }
@@ -264,6 +273,25 @@ public class Controller implements Initializable {
         BranchPane.setVisible(true);
         new FadeIn(BranchPane).play();
         RefreshBranchTable();
+    }
+
+    @FXML
+    public void LogOutLabelClicked() throws IOException {
+        System.out.println("LogOutLabel clicked on MainScreen");
+
+        // Loads the main page
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("LoginPage.fxml"));
+        Parent parent = loader.load();
+
+        // Gets stage's info and setting it up
+        Stage stage = (Stage) LogOutLabel.getScene().getWindow();
+        stage.setResizable(false);
+        stage.setTitle("Login Page");
+        stage.setScene(new Scene(parent));
+        stage.show();
+
+        System.out.println(user.getEmployeeName() + " has Logged Out");
     }
 
     // Order Pane Functions

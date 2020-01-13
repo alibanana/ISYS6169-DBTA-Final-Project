@@ -427,6 +427,18 @@ public class Database {
         return rs.getString("employee_id");
     }
 
+    public static Employee getEmployeeData(String Name, String Password) throws SQLException {
+        conn = connect();
+
+        String sql = "SELECT * FROM employee WHERE employee_name = '%s' AND password = '%s'";
+        sql = String.format(sql, Name, Password);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return new Employee(rs.getString("employee_id"), rs.getString("employee_name"), rs.getString("password"),
+                rs.getString("position_id"), rs.getString("branch_id"));
+    }
+
     public static String getPositionName(String PositionID) throws SQLException{
         conn = connect();
 
