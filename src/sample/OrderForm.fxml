@@ -96,7 +96,7 @@
             </Label>
             <Label fx:id="branchLabel" layoutX="458.0" layoutY="58.0" prefHeight="27.0" prefWidth="123.0" text="Branch Name">
                <font>
-                  <Font name="System Bold" size="16.0" />
+                  <Font size="16.0" />
                </font>
             </Label>
             <Label fx:id="orderDateLabel" layoutX="458.0" layoutY="16.0" prefHeight="27.0" prefWidth="123.0" text="01/01/01 ">

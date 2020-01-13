@@ -1,31 +1,31 @@
 package sample;
 
+import java.sql.SQLException;
+
 public class SubOrder {
     private int ColNo;
-    private String OrderID;
     private String ProductID;
     private String ProductName;
     private int Qty;
     private String Description;
     private int Price;
 
-    public SubOrder(int ColNo, String orderID, String productName, int qty, String description, int price) {
+    public SubOrder(int ColNo,String productID, String productName, int qty, String description, int price) {
         this.ColNo = ColNo;
-        OrderID = orderID;
+        ProductID = productID;
         ProductName = productName;
         Qty = qty;
         Description = description;
         Price = price;
     }
 
-
-    // Constructor for TableView
-    public SubOrder(int ColNo, String orderID, String productName, int qty, String description) {
+    public SubOrder(int ColNo, String productID, int qty, String description, int price) throws SQLException {
         this.ColNo = ColNo;
-        OrderID = orderID;
-        ProductName = productName;
+        ProductID = productID;
+        ProductName = Database.getProductName(productID);
         Qty = qty;
         Description = description;
+        Price = price;
     }
 
     public int getColNo() {
@@ -34,14 +34,6 @@ public class SubOrder {
 
     public void setColNo(int colNo) {
         ColNo = colNo;
-    }
-
-    public String getOrderID() {
-        return OrderID;
-    }
-
-    public void setOrderID(String orderID) {
-        OrderID = orderID;
     }
 
     public String getProductName() {

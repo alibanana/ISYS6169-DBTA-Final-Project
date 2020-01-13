@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 10, 2020 at 10:48 AM
+-- Generation Time: Jan 13, 2020 at 09:26 AM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.23
 
@@ -39,7 +39,8 @@ CREATE TABLE `branch` (
 
 INSERT INTO `branch` (`branch_id`, `branch_name`, `address`, `phone`) VALUES
 ('BRC00001', 'Citos', 'Cilandak Town Square, Lantai 1, Jl. TB Simatupang, Fatmawati, Jakarta Selatan', '6281218548571'),
-('BRC00002', 'Kokas', 'Kota Kasablanka, Jl Casablanca Raya Kav.88 Unit 71 Lt : LG Floor Jakarta Selatan', '6281299685928');
+('BRC00002', 'Kokas', 'Kota Kasablanka, Jl Casablanca Raya Kav.88 Unit 71 Lt : LG Floor Jakarta Selatan', '6281299685928 '),
+('BRC00003', 'Gandaria City', 'Gandaria City, Lantai Upper Ground, Jl. Sultan Iskandar Muda, Gandaria, Jakarta Selatan', '6281218672529');
 
 -- --------------------------------------------------------
 
@@ -62,7 +63,7 @@ CREATE TABLE `employee` (
 INSERT INTO `employee` (`employee_id`, `employee_name`, `password`, `position_id`, `branch_id`) VALUES
 ('EMP00001', 'Alifio Rasyid', 'alifio', 'POS00001', ''),
 ('EMP00002', 'Muchsin Hisyam', 'muchsin', 'POS00002', 'BRC00002'),
-('EMP00003', 'Fauzan Athallah', 'fauzan', 'POS00003', 'BRC00002');
+('EMP00003', 'Fauzan Athallah', 'fauzan123', 'POS00003', 'BRC00002');
 
 -- --------------------------------------------------------
 
@@ -121,7 +122,7 @@ INSERT INTO `position` (`position_id`, `position_name`) VALUES
 CREATE TABLE `products` (
   `product_id` varchar(8) NOT NULL,
   `product_name` varchar(255) NOT NULL,
-  `type_id` varchar(8) NOT NULL,
+  `TypeID` varchar(8) NOT NULL,
   `price` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -129,28 +130,70 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `type_id`, `price`) VALUES
-('PRO00001', 'Salted Egg Chicken', 'TYP00001', 40000),
-('PRO00002', 'Nasi', 'TYP00002', 10000);
+INSERT INTO `products` (`product_id`, `product_name`, `TypeID`, `price`) VALUES
+('PRO00001', 'Salted Egg Chicken (R)', 'TYP00001', 35000),
+('PRO00002', 'Sambal Chicken (R)', 'TYP00001', 40000),
+('PRO00003', 'Brown Butter Chicken (R)', 'TYP00001', 35000),
+('PRO00004', 'Salted Egg Chicken (L)', 'TYP00001', 50000),
+('PRO00005', 'Sambal Chicken (L)', 'TYP00001', 60000),
+('PRO00006', 'Brown Butter Chicken (L)', 'TYP00001', 50000),
+('PRO00007', 'Salted Egg Dori (R)', 'TYP00002', 40000),
+('PRO00008', 'Sambal Dori (R)', 'TYP00002', 45000),
+('PRO00009', 'Brown Butter Dori (R)', 'TYP00002', 40000),
+('PRO00010', 'Salted Egg Dori (L)', 'TYP00002', 60000),
+('PRO00011', 'Sambal Dori (L)', 'TYP00002', 65000),
+('PRO00012', 'Brown Butter Dori (L)', 'TYP00002', 60000),
+('PRO00013', 'Salted Egg Chicken (L) (No Egg)', 'TYP00001', 80000),
+('PRO00014', 'Sambal Chicken (L) (No Egg)', 'TYP00001', 100000),
+('PRO00015', 'Brown Butter Chicken (L) (No Egg)', 'TYP00001', 80000),
+('PRO00016', 'Salted Egg Dori (L) (No Egg)', 'TYP00002', 100000),
+('PRO00017', 'Sambal Dori (L) (No Egg)', 'TYP00002', 105000),
+('PRO00018', 'Brown Butter Dori (L) (No Egg)', 'TYP00002', 100000),
+('PRO00019', 'Duo Jumbo SE & BB', 'TYP00003', 62000),
+('PRO00020', 'Duo Jumbo SE & SA', 'TYP00003', 65000),
+('PRO00021', 'Duo Jumbo BB & SA', 'TYP00003', 65000),
+('PRO00022', 'Duo Jumbo SE & BB', 'TYP00003', 62000),
+('PRO00023', 'Chicken Wings', 'TYP00004', 28000),
+('PRO00024', 'Chipslah Original', 'TYP00004', 35000),
+('PRO00025', 'Chipslah Spicy', 'TYP00004', 35500),
+('PRO00026', 'Fish Skin', 'TYP00004', 62500),
+('PRO00027', 'Shaker Fries', 'TYP00004', 20000),
+('PRO00028', 'Sauce', 'TYP00005', 5000),
+('PRO00029', 'Rice', 'TYP00005', 5000),
+('PRO00030', 'Egg', 'TYP00005', 5000),
+('PRO00031', 'Bottled Drink', 'TYP00006', 7000),
+('PRO00032', 'Nestle Beverages', 'TYP00006', 12000),
+('PRO00033', 'Mineral Water', 'TYP00006', 5000),
+('PRO00034', 'Set Lah 1 (Chicken)', 'TYP00007', 70000),
+('PRO00035', 'Set Lah 2 (Chicken)', 'TYP00007', 70000),
+('PRO00036', 'Set Lah 3 (Chicken)', 'TYP00007', 70000),
+('PRO00037', 'Set Lah 1 (Dori)', 'TYP00007', 75000),
+('PRO00038', 'Set Lah 2 (Dori)', 'TYP00007', 80000),
+('PRO00039', 'Set Lah 3 (Dori)', 'TYP00007', 75000);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `type_products`
+-- Table structure for table `product_type`
 --
 
-CREATE TABLE `type_products` (
-  `type_id` varchar(8) NOT NULL,
-  `type_name` varchar(255) NOT NULL
+CREATE TABLE `product_type` (
+  `TypeID` varchar(8) NOT NULL,
+  `Type` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `type_products`
+-- Dumping data for table `product_type`
 --
 
-INSERT INTO `type_products` (`type_id`, `type_name`) VALUES
+INSERT INTO `product_type` (`TypeID`, `Type`) VALUES
 ('TYP00001', 'Chicken'),
-('TYP00002', 'Rice');
+('TYP00002', 'Dori'),
+('TYP00003', 'Eatlah Duo'),
+('TYP00004', 'Sides'),
+('TYP00005', 'Extras'),
+('TYP00006', 'Drinks'),
+('TYP00007', 'Set Lah');
 
 --
 -- Indexes for dumped tables
@@ -192,13 +235,14 @@ ALTER TABLE `position`
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
-  ADD PRIMARY KEY (`product_id`);
+  ADD PRIMARY KEY (`product_id`),
+  ADD KEY `TypeID` (`TypeID`);
 
 --
--- Indexes for table `type_products`
+-- Indexes for table `product_type`
 --
-ALTER TABLE `type_products`
-  ADD PRIMARY KEY (`type_id`);
+ALTER TABLE `product_type`
+  ADD PRIMARY KEY (`TypeID`);
 
 --
 -- Constraints for dumped tables
@@ -216,6 +260,12 @@ ALTER TABLE `orders`
 ALTER TABLE `orders_details`
   ADD CONSTRAINT `orders_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `orders_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`TypeID`) REFERENCES `product_type` (`TypeID`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

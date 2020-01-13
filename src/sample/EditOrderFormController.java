@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
 
+import javax.xml.crypto.Data;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,14 +35,16 @@ public class EditOrderFormController implements Initializable {
     @FXML private TextField qty;
     @FXML private TextArea productDescription;
 
-    @FXML private Label cashierName;
-    @FXML private Label orderID;
-    @FXML private DatePicker orderDate;
-    @FXML private Label orderStatus;
+    @FXML private Label cashierNameLabel;
+    @FXML private Label orderIDLabel;
+    @FXML private Label orderDateLabel;
+    @FXML private Label orderTimeLabel;
+    @FXML private Label orderStatusLabel;
+    @FXML private Label branchLabel;
 
-    @FXML private Label grandTotal;
+    @FXML private Label grandTotalLabel;
     @FXML private TextField cash;
-    @FXML private Label change;
+    @FXML private Label changeLabel;
 
     // Table Members
     @FXML private TableView<SubOrder> SubOrderTable;
@@ -62,11 +65,11 @@ public class EditOrderFormController implements Initializable {
         this.ProductList = ProductList;
         bindProductName();
 
-        cashierName.setText(order.getCashierName());
-        orderID.setText(order.getOrderID());
-//        orderDate.setValue(order.getOrderDate());
-        orderStatus.setText(order.getStatus());
-        grandTotal.setText(String.valueOf(order.getTotal()));
+        cashierNameLabel.setText(order.getCashierName());
+        orderIDLabel.setText(order.getOrderID());
+        orderDateLabel.setText(order.getLocalDateTime().toLocalDate().toString());
+        orderTimeLabel.setText(order.getLocalDateTime().toLocalTime().toString());
+        grandTotalLabel.setText(String.valueOf(order.getTotal()));
         cash.setText(String.valueOf(order.getCash()));
         RefreshSubOrderList();
     }
@@ -127,21 +130,21 @@ public class EditOrderFormController implements Initializable {
         }
 
         // Set Labels;
-        grandTotal.setText(String.valueOf(gTotal));
+        grandTotalLabel.setText(String.valueOf(gTotal));
     }
 
     private void RefreshSubOrderList(){
         SubOrderList.clear();
         try {
-            String sql = "SELECT * FROM orders_details";
+            String sql = " SELECT orders_details.*, price FROM orders_details, products WHERE orders_details.product_id = products.product_id;";
 
             Connection conn = Database.connect();
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
             int colNo = 1;
             while(rs.next()) {
-                SubOrderList.add(new SubOrder(colNo, rs.getString("order_id"), rs.getString("product_id"),
-                        rs.getInt("qty"), rs.getString("description")));
+                SubOrderList.add(new SubOrder(colNo, rs.getString("product_id"),
+                        rs.getInt("qty"), rs.getString("description"), rs.getInt("price")));
                 colNo++;
             }
 
@@ -160,8 +163,9 @@ public class EditOrderFormController implements Initializable {
         int Qty;
         String Description;
 
+        Database.clearSubOrders(order.getOrderID());
+
         // SQL queries
-//        Database.editOrder();
         for (SubOrder subOrder: SubOrderList){
             OrderID = order.getOrderID();
             ProductID = subOrder.getProductID();
@@ -169,10 +173,24 @@ public class EditOrderFormController implements Initializable {
             Description = subOrder.getDescription();
             Database.addSubOrder(OrderID, ProductID, Qty, Description);
         }
+        Database.editOrder(order.getOrderID(), Integer.parseInt(grandTotalLabel.getText()), Integer.parseInt(changeLabel.getText()));
 
         // Close Stage & Refresh Table
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
         parentController.RefreshOrderTable();
     }
+
+    @FXML
+    public void calculatePaid(){
+        int Change = 0;
+        // Getting Grand Total value
+        int gTotal = Integer.parseInt(grandTotalLabel.getText());
+        // Getting Paid value
+        int Paid = Integer.parseInt(cash.getText());
+
+        Change =  Paid - gTotal;
+        changeLabel.setText(String.valueOf(Change));
+    }
+
 }

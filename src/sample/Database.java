@@ -1,5 +1,7 @@
 package sample;
 
+import org.omg.CORBA.ORB;
+
 import java.lang.reflect.Type;
 import java.sql.*;
 import java.time.LocalDate;
@@ -219,23 +221,23 @@ public class Database {
     public static String getProductName(String ProductID) throws SQLException{
         conn = connect();
 
-        String sql = "SELECT ProductName FROM products WHERE ProductID = '%s'";
+        String sql = "SELECT product_name FROM products WHERE product_id = '%s'";
         sql = String.format(sql, ProductID);
         ResultSet rs = conn.createStatement().executeQuery(sql);
 
         rs.next();
-        return rs.getString("ProductName");
+        return rs.getString("product_name");
     }
 
     public static int getProductPrice(String ProductID) throws SQLException{
         conn = connect();
 
-        String sql = "SELECT Price FROM products WHERE ProductID = '%s'";
+        String sql = "SELECT price FROM products WHERE product_id = '%s'";
         sql = String.format(sql, ProductID);
         ResultSet rs = conn.createStatement().executeQuery(sql);
 
         rs.next();
-        return rs.getInt("Price");
+        return rs.getInt("price");
     }
 
     public static boolean isProductTypeExistInProduct(String TypeID) throws SQLException{
@@ -261,13 +263,13 @@ public class Database {
     }
 
     // Order Queries
-    public static void addOrder(String order_id, String employee_id, LocalDateTime dateTime, int total, int cash, String status){
+    public static void addOrder(String order_id, String employee_id, LocalDateTime dateTime, String branch_id, int total, int cash){
         try {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "INSERT INTO orders(order_id, employee_id, dateTime, total, cash, status) VALUE('%s', '%s', '%s', '%d', '%d', '%d', '%s')";
-            sql = String.format(sql, order_id, employee_id, dateTime, total, cash, status);
+            String sql = "INSERT INTO orders(order_id, employee_id, dateTime, branch_id, total, cash) VALUE('%s', '%s', '%s','%s', '%d', '%d')";
+            sql = String.format(sql, order_id, employee_id, dateTime, branch_id, total, cash);
             stmt.execute(sql);
 
             System.out.println(String.format("Added %s to orders", order_id));
@@ -291,6 +293,21 @@ public class Database {
         }
     }
 
+    public static void clearSubOrders(String OrderID){
+        try {
+            conn = connect();
+            stmt = conn.createStatement();
+
+            String sql = "DELETE FROM order_details WHERE order_id = '%s'";
+            sql = String.format(sql, OrderID);
+            stmt.execute(sql);
+
+            System.out.println(String.format("Clear all sub-orders on : ", OrderID));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void deleteOrder(String id){
         try {
             conn = connect();
@@ -303,13 +320,13 @@ public class Database {
         }
     }
 
-    public static void editOrder(String order_id, String employee_id, LocalDate date, int total, int cash, int changes, String status){
+    public static void editOrder(String order_id, int total, int cash){
         try {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "UPDATE orders SET employee_id='%s', date='%s', total='%d', cash='%d', changes='%d', status='%s' WHERE order_id='%s'";
-            sql = String.format(sql, employee_id, date, total, cash, changes, status, order_id);
+            String sql = "UPDATE orders SET total='%d', cash='%d' WHERE order_id='%s'";
+            sql = String.format(sql, total, cash, order_id);
             stmt.execute(sql);
 
         } catch (SQLException e) {
@@ -424,7 +441,7 @@ public class Database {
         ResultSet rs = conn.createStatement().executeQuery(sql);
 
         rs.next();
-        return rs.getString("employee_id");
+        return rs.getString("employee_name");
     }
 
     public static Employee getEmployeeData(String Name, String Password) throws SQLException {

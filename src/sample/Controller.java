@@ -19,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -211,6 +212,10 @@ public class Controller implements Initializable {
 
     private void DisableBranchOptions(){
         System.out.println("Disable Branch Options");
+        OrderFilter.setDisable(true);
+        OrderFilter.setVisible(false);
+        OrderFilterLabel.setDisable(true);
+        OrderFilterLabel.setVisible(false);
         BranchRectangle.setDisable(true);
         BranchRectangle.setVisible(false);
         BranchLabel.setDisable(true);
@@ -223,6 +228,7 @@ public class Controller implements Initializable {
     public void OrderLabelClicked(){
         System.out.println("OrderLabel clicked on MainScreen");
         LabelDefault();
+        OrderFilter.setPromptText("Branch: All");
         OrderLabel.setTextFill(Paint.valueOf("#640e19"));
         OrderRectangle.setVisible(true);
         new FadeIn(OrderRectangle).play();
@@ -252,6 +258,7 @@ public class Controller implements Initializable {
     public void EmployeeLabelClicked(){
         System.out.println("EmployeeLabel clicked on MainScreen");
         LabelDefault();
+        EmployeeFilter.setPromptText("Position: All");
         EmployeeLabel.setTextFill(Paint.valueOf("#640e19"));
         EmployeeRectangle.setVisible(true);
         new FadeIn(EmployeeRectangle).play();
@@ -296,9 +303,11 @@ public class Controller implements Initializable {
 
     // Order Pane Functions
     @FXML
-    public void NewOrderClicked() throws IOException {
+    public void NewOrderClicked() throws IOException, SQLException {
         System.out.println("New Order Clicked");
         new FadeIn(NewOrderLabel).setSpeed(5).play();
+
+        RefreshProductList();
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("OrderForm.fxml"));
@@ -314,7 +323,7 @@ public class Controller implements Initializable {
 
         // Passing data to ProductFormController
         OrderFormController controller = loader.getController();
-        controller.initData(this, prevOrderID, ProductList);
+        controller.initData(this, prevOrderID, ProductList, user);
 
         // Setting the stage up
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -378,10 +387,8 @@ public class Controller implements Initializable {
             String sql = "SELECT * FROM orders";
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
-            int colNo = 1;
             while(rs.next()) {
-                OrderList.add(new Order(rs.getString("order_id"), Database.getEmployeeName(rs.getString("employee_id")), rs.getTimestamp("datetime").toLocalDateTime(), rs.getInt("total"), rs.getString("status")));
-                colNo++;
+                OrderList.add(new Order(rs.getString("order_id"), Database.getEmployeeName(rs.getString("employee_id")), rs.getTimestamp("datetime").toLocalDateTime(), Database.getBranchName(rs.getString("branch_id")), rs.getInt("total"), rs.getInt("cash")));
             }
 
             rs.close();
@@ -389,33 +396,34 @@ public class Controller implements Initializable {
         } catch (SQLException e) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
         }
-        OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("order_id"));
-        OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
-        OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        BranchCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-        OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("total"));
+
+        OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("OrderID"));
+        OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("CashierName"));
+        OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("DateTime"));
+        BranchCol.setCellValueFactory(new PropertyValueFactory<>("Branch"));
+        OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("Total"));
         OrderTable.setItems(OrderList);
     }
 
     @FXML
     public void RefreshOrderTable() throws NullPointerException{
         RefreshOrderList();
-        OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("order_id"));
-        OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("employee_id"));
-        OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        BranchCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-        OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("total"));
+        OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("OrderID"));
+        OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("CashierName"));
+        OrdDateCol.setCellValueFactory(new PropertyValueFactory<>("DateTime"));
+        BranchCol.setCellValueFactory(new PropertyValueFactory<>("Branch"));
+        OrdTotalCol.setCellValueFactory(new PropertyValueFactory<>("Total"));
         OrderTable.setItems(OrderList);
     }
 
     public void RefreshOrderFilter(int settings){
-//        OrderFilter.getItems().clear();
+        OrderFilter.getItems().clear();
         AllBranch = Database.getAllBranch();
         // Setting == 1 is for Filter Settings
         if(settings == 1){
             AllBranch.put("All", "0");
         }
-//        OrderFilter.setItems(FXCollections.observableArrayList(AllBranch.keySet()));
+        OrderFilter.setItems(FXCollections.observableArrayList(AllBranch.keySet()));
         System.out.println("Refreshed OrderFilter in Mainscreen.fxml");
     }
 

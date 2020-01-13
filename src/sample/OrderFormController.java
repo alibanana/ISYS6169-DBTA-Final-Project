@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
 
+import javax.xml.crypto.Data;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class OrderFormController implements Initializable {
     private ObservableList<Product> ProductList = FXCollections.observableArrayList();
     private ArrayList<String> ListofProductNames = new ArrayList<>();
     private Product selectedProduct;
+    private Employee user;
 
     // Orders ID (prev and new)
     private int prevOrderID;
@@ -40,6 +42,7 @@ public class OrderFormController implements Initializable {
     @FXML private Label orderDateLabel;
     @FXML private Label orderTimeLabel;
     @FXML private Label orderStatusLabel;
+    @FXML private Label branchLabel;
 
     @FXML private Label grandTotalLabel;
     @FXML private TextField cash;
@@ -65,10 +68,11 @@ public class OrderFormController implements Initializable {
         orderTimeLabel.setText(String.valueOf(LocalTime.now()));
     }
 
-    public void initData(Controller parentController, String prevOrderID, ObservableList<Product> ProductList){
+    public void initData(Controller parentController, String prevOrderID, ObservableList<Product> ProductList, Employee user) throws SQLException {
         this.parentController = parentController;
         this.ProductList = ProductList;
         this.prevOrderID = Integer.parseInt(prevOrderID.replaceAll("[^\\d.]", ""));
+        this.user = user;
 
         bindProductName();
 
@@ -77,6 +81,8 @@ public class OrderFormController implements Initializable {
         System.out.println("Order ID: " + newOrderID);
 
         // Set value
+        cashierNameLabel.setText(user.getEmployeeName());
+        branchLabel.setText(Database.getBranchName(user.getBranchID()));
         orderIDLabel.setText(newOrderID);
     }
 
@@ -106,6 +112,7 @@ public class OrderFormController implements Initializable {
     @FXML
     public void addItemClicked() {
         System.out.println("AddItemButton clicked on OrderForm.fxml");
+        System.out.println(selectedProduct.getProductID());
         SubOrderList.add(new SubOrder(SubOrderList.size()+1, selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
         RefreshSubOrderTable();
         clearTextfields();
@@ -148,7 +155,7 @@ public class OrderFormController implements Initializable {
         LocalDateTime dateTime = LocalDate.parse(orderDateLabel.getText()).atTime(LocalTime.parse(orderTimeLabel.getText()));
 
         // SQL queries
-        Database.addOrder(newOrderID, cashierNameLabel.getText(), dateTime, Integer.valueOf(grandTotalLabel.getText()), Integer.valueOf(cash.getText()), orderStatusLabel.getText());
+        Database.addOrder(newOrderID, user.getEmployeeID(), dateTime, user.getBranchID(), Integer.valueOf(grandTotalLabel.getText()), Integer.valueOf(cash.getText()));
         for (SubOrder subOrder: SubOrderList){
             OrderID = newOrderID;
             ProductID = subOrder.getProductID();
