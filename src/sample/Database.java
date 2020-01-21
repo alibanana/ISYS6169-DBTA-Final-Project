@@ -495,4 +495,48 @@ public class Database {
         rs.next();
         return rs.getString("branch_id");
     }
+
+    public static String getLastOrderID() throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT MAX(order_id) as last_id from orders";
+        sql = String.format(sql);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("last_id");
+    }
+
+    public static String getLastProductID() throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT MAX(product_id) as last_id from products";
+        sql = String.format(sql);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("last_id");
+    }
+
+    public static String getLastEmployeeID() throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT MAX(employee_id) as last_id from employee";
+        sql = String.format(sql);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("last_id");
+    }
+
+    public static String getLastBranchID() throws SQLException{
+        conn = connect();
+
+        String sql = "SELECT MAX(branch_id) as last_id from branch";
+        sql = String.format(sql);
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        rs.next();
+        return rs.getString("last_id");
+    }
 }

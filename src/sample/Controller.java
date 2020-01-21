@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -139,7 +140,7 @@ public class Controller implements Initializable {
         LogOutLabel.setFont(Font.loadFont("file:src/fonts/cocoregular.ttf", 18));
     }
 
-    public void initData(Employee employee){
+    public void initData(Employee employee) throws SQLException {
         user = employee;
 
         // Set Settings
@@ -241,7 +242,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void OrderLabelClicked(){
+    public void OrderLabelClicked() throws SQLException {
         System.out.println("OrderLabel clicked on MainScreen");
         LabelDefault();
         OrderFilter.setPromptText("Branch: All");
@@ -334,7 +335,7 @@ public class Controller implements Initializable {
         // Get CurrentProductID; if no Product exist yet prevProductID set to 0
         String prevOrderID = "ORD00000";
         if (!OrderList.isEmpty()){
-            prevOrderID = OrderList.get(OrderList.size()-1).getOrderID();
+            prevOrderID = Database.getLastOrderID();
         }
 
         // Passing data to ProductFormController
@@ -350,16 +351,24 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void DeleteOrderClicked(){
+    public void DeleteOrderClicked() throws SQLException {
         System.out.println("Delete Order Clicked");
         new FadeIn(DeleteOrderLabel).setSpeed(5).play();
 
         // Gets Selected Row
         Order selectedOrder = OrderTable.getSelectionModel().getSelectedItem();
-        if(!(selectedOrder == null)){
+        if (!(selectedOrder == null)) {
             String id = selectedOrder.getOrderID();
             Database.deleteOrder(id);
             RefreshOrderList();
+        } else {
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click delete order!");
+
+            alert.showAndWait();
         }
     }
 
@@ -379,7 +388,18 @@ public class Controller implements Initializable {
         // Passing data to CustomerFormController
         EditOrderFormController controller = loader.getController();
         Order selectedOrder = OrderTable.getSelectionModel().getSelectedItem();
-        controller.initData(this, selectedOrder, ProductList);
+        try {
+            controller.initData(this, selectedOrder, ProductList);
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click edit order!");
+
+            alert.showAndWait();
+            return;
+        }
 
         // Setting the stage up
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -390,29 +410,53 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void RefreshOrderList() throws NullPointerException{
+    public void RefreshOrderList() throws NullPointerException, SQLException {
         OrderList.clear();
-        String filter;
-        try {
-            // Checks if ComboBox is empty
+
+        // For Area Manager Settings
+        if(Settings == 1){
+            String filter;
             try {
-                filter = OrderFilter.getValue().toString();
-            } catch (NullPointerException e) {
-                filter = "All";
+                // Checks if ComboBox is empty
+                try {
+                    filter = OrderFilter.getValue().toString();
+                } catch (NullPointerException e) {
+                    filter = "All";
+                }
+
+                Connection conn = Database.connect();
+                String sql = "SELECT * FROM orders";
+                ResultSet rs = conn.createStatement().executeQuery(sql);
+
+                while(rs.next()) {
+                    OrderList.add(new Order(rs.getString("order_id"), Database.getEmployeeName(rs.getString("employee_id")), rs.getTimestamp("datetime").toLocalDateTime(), Database.getBranchName(rs.getString("branch_id")), rs.getInt("total"), rs.getInt("cash")));
+                }
+
+                rs.close();
+                conn.close();
+            } catch (SQLException e) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
             }
+        }
 
-            Connection conn = Database.connect();
-            String sql = "SELECT * FROM orders";
-            ResultSet rs = conn.createStatement().executeQuery(sql);
+        // For Branch Manager and Cashier Settings
+        else{
+            try {
+                Connection conn = Database.connect();
+                String branch_id = user.getBranchID();
+                String sql = "SELECT * FROM orders WHERE branch_id ='%s'";
+                sql = String.format(sql, branch_id);
+                ResultSet rs = conn.createStatement().executeQuery(sql);
 
-            while(rs.next()) {
-                OrderList.add(new Order(rs.getString("order_id"), Database.getEmployeeName(rs.getString("employee_id")), rs.getTimestamp("datetime").toLocalDateTime(), Database.getBranchName(rs.getString("branch_id")), rs.getInt("total"), rs.getInt("cash")));
+                while(rs.next()) {
+                    OrderList.add(new Order(rs.getString("order_id"), Database.getEmployeeName(rs.getString("employee_id")), rs.getTimestamp("datetime").toLocalDateTime(), Database.getBranchName(rs.getString("branch_id")), rs.getInt("total"), rs.getInt("cash")));
+                }
+
+                rs.close();
+                conn.close();
+            } catch (SQLException e) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
             }
-
-            rs.close();
-            conn.close();
-        } catch (SQLException e) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
         }
 
         OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("OrderID"));
@@ -424,7 +468,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void RefreshOrderTable() throws NullPointerException{
+    public void RefreshOrderTable() throws NullPointerException, SQLException {
         RefreshOrderList();
         OrdIDCol.setCellValueFactory(new PropertyValueFactory<>("OrderID"));
         OrdEmpIDCol.setCellValueFactory(new PropertyValueFactory<>("CashierName"));
@@ -447,7 +491,7 @@ public class Controller implements Initializable {
 
     // Product Pane Functions
     @FXML
-    public void NewProductClicked() throws IOException {
+    public void NewProductClicked() throws IOException, SQLException {
         System.out.println("NewProductLabel clicked on MainScreen >> Product");
         new FadeIn(NewProductLabel).setSpeed(5).play();
 
@@ -460,7 +504,7 @@ public class Controller implements Initializable {
         // Get CurrentProductID; if no Product exist yet prevProductID set to 0
         String prevProductID = "PRO00000";
         if (!ProductList.isEmpty()){
-            prevProductID = ProductList.get(ProductList.size()-1).getProductID();
+            prevProductID = Database.getLastProductID();
         }
 
         // Passing data to ProductFormController
@@ -488,7 +532,13 @@ public class Controller implements Initializable {
         try {
             id = selectedItem.getProductID();
         } catch (NullPointerException e) {
-            System.out.println("No Product is Selected on ProductTable");
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click delete product!");
+
+            alert.showAndWait();
         }
 
         if(!id.equals("")){
@@ -520,7 +570,18 @@ public class Controller implements Initializable {
         // Passing data to EditProductFormController
         EditProductFormController controller = loader.getController();
         Product selectedProduct = ProductTable.getSelectionModel().getSelectedItem();
-        controller.initData(this, selectedProduct);
+        try {
+            controller.initData(this, selectedProduct);
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click edit product!");
+
+            alert.showAndWait();
+            return;
+        }
 
         // Setting the stage up
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -585,7 +646,7 @@ public class Controller implements Initializable {
 
     // Employee Pane Functions
     @FXML
-    public void NewEmployeeClicked() throws IOException {
+    public void NewEmployeeClicked() throws IOException, SQLException {
         System.out.println("New_Employee_Label clicked in MainScreen.fxml");
         new FadeIn(NewEmployeeLabel).setSpeed(5).play();
 
@@ -602,7 +663,7 @@ public class Controller implements Initializable {
         // Get CurrentEmployeeID; if no Employee exist yet prevEmployeeID set to 0
         String prevEmployeeID = "EMP00000";
         if (!EmployeeList.isEmpty()){
-            prevEmployeeID = EmployeeList.get(EmployeeList.size()-1).getEmployeeID();
+            prevEmployeeID = Database.getLastEmployeeID();
         }
 
         // Passing data to EmployeeFormController
@@ -623,11 +684,21 @@ public class Controller implements Initializable {
         new FadeIn(DeleteEmployeeLabel).setSpeed(5).play();
 
         // Gets Selected Row
-        Employee selectedItem = EmployeeTable.getSelectionModel().getSelectedItem();
-        String id = selectedItem.getEmployeeID();
-        if(!(selectedItem == null)){
-            Database.deleteEmployee(id);
-            RefreshEmployeeList();
+        try{
+            Employee selectedItem = EmployeeTable.getSelectionModel().getSelectedItem();
+            String id = selectedItem.getEmployeeID();
+            if(!(selectedItem == null)){
+                Database.deleteEmployee(id);
+                RefreshEmployeeList();
+            }
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click delete employee!");
+
+            alert.showAndWait();
         }
     }
 
@@ -649,7 +720,18 @@ public class Controller implements Initializable {
         // Passing data to EditEmployeeFormController
         EditEmployeeFormController controller = loader.getController();
         Employee selectedEmployee = EmployeeTable.getSelectionModel().getSelectedItem();
-        controller.initData(this, selectedEmployee, AllPosition, AllBranch);
+        try {
+            controller.initData(this, selectedEmployee, AllPosition, AllBranch);
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click edit employee!");
+
+            alert.showAndWait();
+            return;
+        }
 
         // Setting the stage up
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -721,7 +803,7 @@ public class Controller implements Initializable {
 
     // Branch Pane Functions
     @FXML
-    public void NewBranchClicked() throws IOException {
+    public void NewBranchClicked() throws IOException, SQLException {
         System.out.println("New_Branch_Label clicked in MainScreen.fxml");
         new FadeIn(NewBranchLabel).setSpeed(5).play();
 
@@ -734,7 +816,7 @@ public class Controller implements Initializable {
         // Get CurrentBranchID; if no Branch exist yet prevBranchID set to 0
         String prevBranchID = "BRC00000";
         if (!BranchList.isEmpty()){
-            prevBranchID = BranchList.get(BranchList.size()-1).getBranchID();
+            prevBranchID = Database.getLastBranchID();
         }
 
         // Passing data to BranchFormController
@@ -755,11 +837,21 @@ public class Controller implements Initializable {
         new FadeIn(DeleteBranchLabel).setSpeed(5).play();
 
         // Gets Selected Row
-        Branch selectedItem = BranchTable.getSelectionModel().getSelectedItem();
-        String id = selectedItem.getBranchID();
-        if(!(selectedItem == null)){
-            Database.deleteBranch(id);
-            RefreshBranchList();
+        try{
+            Branch selectedItem = BranchTable.getSelectionModel().getSelectedItem();
+            String id = selectedItem.getBranchID();
+            if (!(selectedItem == null)) {
+                Database.deleteBranch(id);
+                RefreshBranchList();
+            }
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click delete branch!");
+
+            alert.showAndWait();
         }
     }
 
@@ -777,7 +869,19 @@ public class Controller implements Initializable {
         // Passing data to EditBranchFormController
         EditBranchFormController controller = loader.getController();
         Branch selectedBranch = BranchTable.getSelectionModel().getSelectedItem();
-        controller.initData(this, selectedBranch);
+
+        try {
+            controller.initData(this, selectedBranch);
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("No Data Selected!");
+            alert.setContentText("Please select correct row before click edit branch!");
+
+            alert.showAndWait();
+            return;
+        }
 
         // Setting the stage up
         stage.initModality(Modality.APPLICATION_MODAL);
