@@ -347,11 +347,7 @@ public class Controller implements Initializable {
 
         Stage stage = new Stage(); // New stage (window)
 
-        // Get CurrentProductID; if no Product exist yet prevProductID set to 0
-        String prevOrderID = "ORD00000";
-        if (!OrderList.isEmpty()){
-            prevOrderID = Database.getLastOrderID();
-        }
+        String prevOrderID = Database.getLastOrderID();
 
         // Passing data to ProductFormController
         OrderFormController controller = loader.getController();
@@ -508,12 +504,8 @@ public class Controller implements Initializable {
         Parent ProductFormParent = loader.load();
 
         Stage stage = new Stage(); // New stage (window)
-
-        // Get CurrentProductID; if no Product exist yet prevProductID set to 0
-        String prevProductID = "PRO00000";
-        if (!ProductList.isEmpty()){
-            prevProductID = Database.getLastProductID();
-        }
+        
+        String prevProductID = Database.getLastProductID();
 
         // Passing data to ProductFormController
         ProductFormController controller = loader.getController();
@@ -668,11 +660,7 @@ public class Controller implements Initializable {
 
         Stage stage = new Stage(); // New stage (window)
 
-        // Get CurrentEmployeeID; if no Employee exist yet prevEmployeeID set to 0
-        String prevEmployeeID = "EMP00000";
-        if (!EmployeeList.isEmpty()){
-            prevEmployeeID = Database.getLastEmployeeID();
-        }
+        String prevEmployeeID = Database.getLastEmployeeID();
 
         // Passing data to EmployeeFormController
         EmployeeFormController controller = loader.getController();
@@ -820,11 +808,7 @@ public class Controller implements Initializable {
 
         Stage stage = new Stage(); // New stage (window)
 
-        // Get CurrentBranchID; if no Branch exist yet prevBranchID set to 0
-        String prevBranchID = "BRC00000";
-        if (!BranchList.isEmpty()){
-            prevBranchID = Database.getLastBranchID();
-        }
+        String prevBranchID = Database.getLastBranchID();
 
         // Passing data to BranchFormController
         BranchFormController controller = loader.getController();
