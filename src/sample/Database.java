@@ -25,6 +25,20 @@ public class Database {
         }
     }
 
+    public static void setMaxConnection(int maxConnection){
+        try {
+            conn = connect();
+            stmt = conn.createStatement();
+
+            String sql = "SET GLOBAL max_connections = %d";
+            sql = String.format(sql, maxConnection);
+
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static HashMap<String, String> getAllPosition() throws NullPointerException {
         HashMap<String, String> listofPosition = new HashMap<>();
         try {
