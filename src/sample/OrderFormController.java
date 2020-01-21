@@ -109,11 +109,29 @@ public class OrderFormController implements Initializable {
 
     @FXML
     public void addItemClicked() {
-        System.out.println("AddItemButton clicked on OrderForm.fxml");
-        System.out.println(selectedProduct.getProductID());
-        SubOrderList.add(new SubOrder(SubOrderList.size()+1, selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
-        RefreshSubOrderTable();
-        clearTextfields();
+        try {
+            System.out.println("AddItemButton clicked on OrderForm.fxml");
+            System.out.println(selectedProduct.getProductID());
+            SubOrderList.add(new SubOrder(SubOrderList.size() + 1, selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
+            RefreshSubOrderTable();
+            clearTextfields();
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Null Item!");
+            alert.setContentText("Please input correct Items or enter Product Name text field after using its dropdown function!");
+
+            alert.showAndWait();
+        } catch (NumberFormatException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Qty Has Wrong Format!");
+            alert.setContentText("Please input correct format of Qty!");
+
+            alert.showAndWait();
+        }
     }
 
     private void clearTextfields(){
@@ -139,6 +157,15 @@ public class OrderFormController implements Initializable {
         int Paid = Integer.parseInt(cash.getText());
 
         Change =  Paid - gTotal;
+        if(Change < 0){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Change Has Minus Format!");
+            alert.setContentText("Please input correct paid value!");
+
+            alert.showAndWait();
+            return;
+        }
         changeLabel.setText(String.valueOf(Change));
     }
 

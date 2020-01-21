@@ -21,6 +21,7 @@ public class EmployeeFormController implements Initializable {
 
     private int prevEmployeeID;
     private String newEmployeeID;
+    private int Settings;
 
     @FXML private TextField employeeName;
     @FXML private TextField password;
@@ -33,15 +34,20 @@ public class EmployeeFormController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb){}
 
-    public void initData(Controller parentController, String prevEmployeeID, HashMap<String, String> AllPosition,  HashMap<String, String> AllBranch){
+    public void initData(Controller parentController, String prevEmployeeID, HashMap<String, String> allPosition,  HashMap<String, String> allBranch, int settings){
         // Set parentController;
         this.parentController = parentController;
         // Remove alphabetic char and get integer value from latest customer/member
         this.prevEmployeeID = Integer.parseInt(prevEmployeeID.replaceAll("[^\\d.]", ""));
         // Make new EmployeeID
         newEmployeeID = String.format("EMP%05d", this.prevEmployeeID+1);
-        this.AllPosition = AllPosition;
-        this.AllBranch = AllBranch;
+        AllPosition = allPosition;
+        AllBranch = allBranch;
+        Settings = settings;
+        // Branch Manager settings
+        if(Settings == 2){
+            AllPosition.remove("Area Manager");
+        }
         position.setItems(FXCollections.observableArrayList(AllPosition.keySet()));
         branch.setItems(FXCollections.observableArrayList(AllBranch.keySet()));
         System.out.println(newEmployeeID);

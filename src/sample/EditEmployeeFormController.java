@@ -18,6 +18,7 @@ public class EditEmployeeFormController implements Initializable {
 
     private Controller parentController;
     private Employee selectedEmployee;
+    private int Settings;
 
     @FXML private TextField employeeName;
     @FXML private TextField password;
@@ -30,14 +31,17 @@ public class EditEmployeeFormController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb){}
 
-    public void initData(Controller parentController, Employee selectedEmployee, HashMap<String, String> AllPosition, HashMap<String, String> AllBranch){
+    public void initData(Controller parentController, Employee selectedEmployee, HashMap<String, String> allPosition, HashMap<String, String> allBranch, int settings){
         this.parentController = parentController;
         this.selectedEmployee = selectedEmployee;
-        this.AllPosition = AllPosition;
-        this.AllBranch = AllBranch;
+        AllPosition = allPosition;
+        AllBranch = allBranch;
+        Settings = settings;
+        if(Settings == 2){
+            AllPosition.remove("Area Manager");
+        }
         position.setItems(FXCollections.observableArrayList(AllPosition.keySet()));
         branch.setItems(FXCollections.observableArrayList(AllBranch.keySet()));
-
         // Set value for selectedEmployee
         employeeName.setText(this.selectedEmployee.getEmployeeName());
         password.setText(this.selectedEmployee.getPassword());

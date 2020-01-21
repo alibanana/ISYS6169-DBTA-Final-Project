@@ -239,8 +239,6 @@ public class Controller implements Initializable {
         NewEmployeeLabel.setVisible(false);
         DeleteEmployeeLabel.setDisable(true);
         DeleteEmployeeLabel.setVisible(false);
-        EditEmployeeLabel.setDisable(true);
-        EditEmployeeLabel.setVisible(false);
     }
 
     // BranchPane Options
@@ -504,7 +502,7 @@ public class Controller implements Initializable {
         Parent ProductFormParent = loader.load();
 
         Stage stage = new Stage(); // New stage (window)
-        
+
         String prevProductID = Database.getLastProductID();
 
         // Passing data to ProductFormController
@@ -664,7 +662,7 @@ public class Controller implements Initializable {
 
         // Passing data to EmployeeFormController
         EmployeeFormController controller = loader.getController();
-        controller.initData(this, prevEmployeeID, AllPosition, AllBranch);
+        controller.initData(this, prevEmployeeID, AllPosition, AllBranch, Settings);
 
         // Setting the stage up
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -675,14 +673,25 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void DeleteEmployeeClicked(){
+    public void DeleteEmployeeClicked() throws SQLException {
         System.out.println("Delete_Employee_Label clicked on MainScreen.fxml");
         new FadeIn(DeleteEmployeeLabel).setSpeed(5).play();
 
         // Gets Selected Row
         try{
             Employee selectedItem = EmployeeTable.getSelectionModel().getSelectedItem();
+            int selectedPositionID = Integer.parseInt(Database.getPositionID(selectedItem.getPosition()).replaceAll("[^\\d.]", ""));
             String id = selectedItem.getEmployeeID();
+            if(selectedPositionID < Settings){
+                // Validation with alert box
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("Access Denied!");
+                alert.setContentText("You cannot delete employee that has higher position!");
+
+                alert.showAndWait();
+                return;
+            }
             if(!(selectedItem == null)){
                 Database.deleteEmployee(id);
                 RefreshEmployeeList();
@@ -699,7 +708,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void EditEmployeeClicked() throws IOException {
+    public void EditEmployeeClicked() throws IOException, SQLException {
         System.out.println("Edit_Employee_Label clicked on MainScreen.fxml");
         new FadeIn(EditEmployeeLabel).setSpeed(5).play();
 
@@ -715,9 +724,33 @@ public class Controller implements Initializable {
 
         // Passing data to EditEmployeeFormController
         EditEmployeeFormController controller = loader.getController();
-        Employee selectedEmployee = EmployeeTable.getSelectionModel().getSelectedItem();
         try {
-            controller.initData(this, selectedEmployee, AllPosition, AllBranch);
+            Employee selectedEmployee = EmployeeTable.getSelectionModel().getSelectedItem();
+            int selectedPositionID = Integer.parseInt(Database.getPositionID(selectedEmployee.getPosition()).replaceAll("[^\\d.]", ""));
+            if(selectedPositionID < Settings){
+                // Validation with alert box
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("Access Denied!");
+                alert.setContentText("You cannot edit employee that has higher position!");
+
+                alert.showAndWait();
+                return;
+            }
+            if(Settings == 3 && selectedEmployee.getEmployeeID().equals(user.getEmployeeID())){
+                controller.initData(this, selectedEmployee, AllPosition, AllBranch, Settings);
+            } else if(Settings != 3){
+                controller.initData(this, selectedEmployee, AllPosition, AllBranch, Settings);
+            } else{
+                // Validation with alert box
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("Access Denied!");
+                alert.setContentText("You cannot edit other employee!");
+
+                alert.showAndWait();
+                return;
+            }
         } catch (NullPointerException e){
             // Validation with alert box
             Alert alert = new Alert(Alert.AlertType.ERROR);

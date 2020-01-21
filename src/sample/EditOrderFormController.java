@@ -78,6 +78,7 @@ public class EditOrderFormController implements Initializable {
 
         RefreshSubOrderList();
         RefreshSubOrderTable();
+        calculatePaid();
     }
 
     private void bindProductName(){
@@ -116,15 +117,34 @@ public class EditOrderFormController implements Initializable {
 
     @FXML
     public void addItemClicked() {
-        System.out.println("AddItemButton clicked on EditOrderForm");
-        SubOrder subOrder = SubOrderTable.getSelectionModel().getSelectedItem();
-        // If Product is Edited
-        if (productInList(selectedProduct.getProductID())){
-            SubOrderList.remove(SubOrderTable.getSelectionModel().getSelectedIndex());
+        try {
+            System.out.println("AddItemButton clicked on EditOrderForm");
+            SubOrder subOrder = SubOrderTable.getSelectionModel().getSelectedItem();
+            // If Product is Edited
+            if (productInList(selectedProduct.getProductID())) {
+                SubOrderList.remove(SubOrderTable.getSelectionModel().getSelectedIndex());
+            }
+            SubOrderList.add(new SubOrder(subOrder.getColNo(), selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
+            RefreshSubOrderTable();
+            calculatePaid();
+            clearTextfields();
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Null Item!");
+            alert.setContentText("Please input correct Items or enter Product Name text field after using its dropdown function!");
+
+            alert.showAndWait();
+        } catch (NumberFormatException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Qty Has Wrong Format!");
+            alert.setContentText("Please input correct format of Qty!");
+
+            alert.showAndWait();
         }
-        SubOrderList.add(new SubOrder(subOrder.getColNo(), selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
-        RefreshSubOrderTable();
-        clearTextfields();
     }
 
     private boolean productInList(String ProductID) {
@@ -149,6 +169,7 @@ public class EditOrderFormController implements Initializable {
         System.out.println("DeleteItemButton clicked on OrderForm.fxml");
         SubOrderList.remove(SubOrderTable.getSelectionModel().getSelectedIndex());
         RefreshSubOrderTable();
+        calculatePaid();
     }
 
     private void RefreshSubOrderTable(){
@@ -195,7 +216,7 @@ public class EditOrderFormController implements Initializable {
         int Qty;
         String Description;
 
-        Database.editOrder(order.getOrderID(), Integer.parseInt(grandTotalLabel.getText()), Integer.parseInt(changeLabel.getText()));
+        Database.editOrder(order.getOrderID(), Integer.parseInt(grandTotalLabel.getText()), Integer.parseInt(cash.getText()));
 
         Database.clearSubOrders(order.getOrderID());
 
@@ -223,7 +244,15 @@ public class EditOrderFormController implements Initializable {
         int Paid = Integer.parseInt(cash.getText());
 
         Change =  Paid - gTotal;
+        if(Change < 0){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Change Has Minus Format!");
+            alert.setContentText("Please input correct paid value!");
+
+            alert.showAndWait();
+            return;
+        }
         changeLabel.setText(String.valueOf(Change));
     }
-
 }
