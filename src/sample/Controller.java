@@ -3,11 +3,9 @@ package sample;
 import animatefx.animation.FadeIn;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,12 +17,12 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -53,8 +51,9 @@ public class Controller implements Initializable {
     @FXML private Label DeleteOrderLabel;
     @FXML private Label EditOrderLabel;
     @FXML private ComboBox OrderFilter;
-    @FXML private DatePicker OrderDateFilter;
     @FXML private Label OrderFilterLabel;
+    @FXML private DatePicker OrderDateFilterStart;
+    @FXML private DatePicker OrderDateFilterEnd;
     @FXML private Label OrderDateFilterLabel;
     @FXML private TableView<Order> OrderTable;
     @FXML private TableColumn<Order, String> OrdIDCol;
@@ -93,7 +92,6 @@ public class Controller implements Initializable {
     @FXML private TableColumn<Order, String> EmpIDCol;
     @FXML private TableColumn<Order, String> EmpNameCol;
     @FXML private TableColumn<Order, String> EmpPositionCol;
-    @FXML private TableColumn<Order, String> EmpPasswordCol;
     @FXML private TableColumn<Order, String> EmpBranchCol;
     ObservableList<Employee> EmployeeList = FXCollections.observableArrayList();
     public HashMap<String, String> AllPosition;
@@ -181,33 +179,50 @@ public class Controller implements Initializable {
         }
         // Branch Manager Settings
         else if (Settings == 2){
+            OrderOptionforBranchManagers();
             ProductOptionforBranchManagersAndCashiers();
-            DisableBranchOptions();
         }
         // Cashier Options
         else if (Settings == 3){
             OrderOptionforCashiers();
             ProductOptionforBranchManagersAndCashiers();
-            DisableEmployeeOptions();
-            DisableBranchOptions();
+            EmployeeOptionforCashiers();
+            BranchOptionforCashiers();
         }
     }
 
+    // OrderPane Options
     private void OrderOptionforAreaManagers(){
         System.out.println("Enable Order Option for Area Managers");
         NewOrderLabel.setDisable(true);
         NewOrderLabel.setVisible(false);
+        EditOrderLabel.setDisable(true);
+        EditOrderLabel.setVisible(false);
+        DeleteOrderLabel.setDisable(true);
+        DeleteOrderLabel.setVisible(false);
+    }
+
+    private void OrderOptionforBranchManagers(){
+        System.out.println("Enable Order Option for Branch Managers");
+        OrderFilterLabel.setDisable(true);
+        OrderFilterLabel.setVisible(false);
+        OrderFilter.setDisable(true);
+        OrderFilter.setVisible(false);
     }
 
     private void OrderOptionforCashiers(){
         System.out.println("Enable Order Option for Cashiers");
         DeleteOrderLabel.setDisable(true);
         DeleteOrderLabel.setVisible(false);
+        OrderFilterLabel.setDisable(true);
+        OrderFilterLabel.setVisible(false);
+        OrderFilter.setDisable(true);
+        OrderFilter.setVisible(false);
     }
 
-
+    // ProductPane Options
     private void ProductOptionforBranchManagersAndCashiers(){
-        System.out.println("Enable Product Option for Cashiers");
+        System.out.println("Enable Product Option for Branch Managers & Cashiers");
         NewProductLabel.setDisable(true);
         NewProductLabel.setVisible(false);
         DeleteProductLabel.setDisable(true);
@@ -216,34 +231,34 @@ public class Controller implements Initializable {
         EditProductLabel.setVisible(false);
     }
 
-    private void DisableEmployeeOptions(){
-        System.out.println("Disable Employee Options");
-        EmployeeRectangle.setDisable(true);
-        EmployeeRectangle.setVisible(false);
-        EmployeeLabel.setDisable(true);
-        EmployeeLabel.setVisible(false);
-        EmployeePane.setDisable(true);
-        EmployeePane.setVisible(false);
+    // EmployeePane Options
+    private void EmployeeOptionforCashiers(){
+        System.out.println("Enable Employee Option for Cashiers");
+        NewEmployeeLabel.setDisable(true);
+        NewEmployeeLabel.setVisible(false);
+        DeleteEmployeeLabel.setDisable(true);
+        DeleteEmployeeLabel.setVisible(false);
+        EditEmployeeLabel.setDisable(true);
+        EditEmployeeLabel.setVisible(false);
     }
 
-    private void DisableBranchOptions(){
-        System.out.println("Disable Branch Options");
-        OrderFilter.setDisable(true);
-        OrderFilter.setVisible(false);
-        OrderFilterLabel.setDisable(true);
-        OrderFilterLabel.setVisible(false);
-        BranchRectangle.setDisable(true);
-        BranchRectangle.setVisible(false);
-        BranchLabel.setDisable(true);
-        BranchLabel.setVisible(false);
-        BranchPane.setDisable(true);
-        BranchPane.setVisible(false);
+    // BranchPane Options
+    private void BranchOptionforCashiers(){
+        System.out.println("Enable Branch Option for Cashiers");
+        NewBranchLabel.setDisable(true);
+        NewBranchLabel.setVisible(false);
+        DeleteBranchLabel.setDisable(true);
+        DeleteBranchLabel.setVisible(false);
+        EditBranchLabel.setDisable(true);
+        EditBranchLabel.setVisible(false);
     }
 
     @FXML
     public void OrderLabelClicked(){
         System.out.println("OrderLabel clicked on MainScreen");
         LabelDefault();
+        OrderDateFilterStart.setValue(null);
+        OrderDateFilterEnd.setValue(null);
         OrderFilter.setPromptText("Branch: All");
         OrderLabel.setTextFill(Paint.valueOf("#640e19"));
         OrderRectangle.setVisible(true);
@@ -394,15 +409,33 @@ public class Controller implements Initializable {
         OrderList.clear();
         String filter;
         try {
+            String sql = "SELECT * FROM orders";
+            boolean option = false;
+
             // Checks if ComboBox is empty
             try {
                 filter = OrderFilter.getValue().toString();
-            } catch (NullPointerException e) {
-                filter = "All";
+                if (!filter.equals("All")){
+                    sql = sql + " WHERE branch_id = '%s'";
+                    sql = String.format(sql, Database.getBranchID(filter));
+                    option = true;
+                }
+            } catch (NullPointerException ignored) {}
+
+            // Checks if DateFilter is Empty
+            if (!((OrderDateFilterStart.getValue() == null) || (OrderDateFilterEnd.getValue() == null))){
+                LocalDate startDate = OrderDateFilterStart.getValue();
+                LocalDate endDate = OrderDateFilterEnd.getValue();
+                if (option) {
+                    sql = sql + " AND ";
+                } else {
+                    sql = sql + " WHERE ";
+                }
+                sql = sql + "datetime BETWEEN '%s 00:00:00' AND '%s 23:59:59'";
+                sql = String.format(sql, startDate, endDate);
             }
 
             Connection conn = Database.connect();
-            String sql = "SELECT * FROM orders";
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
             while(rs.next()) {
@@ -713,7 +746,6 @@ public class Controller implements Initializable {
         EmpNoCol.setCellValueFactory(new PropertyValueFactory<>("columnNo"));
         EmpIDCol.setCellValueFactory(new PropertyValueFactory<>("EmployeeID"));
         EmpNameCol.setCellValueFactory(new PropertyValueFactory<>("EmployeeName"));
-        EmpPasswordCol.setCellValueFactory(new PropertyValueFactory<>("Password"));
         EmpPositionCol.setCellValueFactory(new PropertyValueFactory<>("Position"));
         EmpBranchCol.setCellValueFactory(new PropertyValueFactory<>("Branch"));
         EmployeeTable.setItems(EmployeeList);
