@@ -10,7 +10,7 @@ public class SubOrder {
     private String Description;
     private int Price;
 
-    public SubOrder(int ColNo,String productID, String productName, int qty, String description, int price) {
+    public SubOrder(int ColNo, String productID, String productName, int qty, String description, int price) {
         this.ColNo = ColNo;
         ProductID = productID;
         ProductName = productName;
@@ -19,14 +19,14 @@ public class SubOrder {
         Price = price;
     }
 
-    public SubOrder(int ColNo, String productID, int qty, String description, int price) throws SQLException {
-        this.ColNo = ColNo;
-        ProductID = productID;
-        ProductName = Database.getProductName(productID);
-        Qty = qty;
-        Description = description;
-        Price = price;
-    }
+//    public SubOrder(int ColNo, String productID, int qty, String description, int price) throws SQLException {
+//        this.ColNo = ColNo;
+//        ProductID = productID;
+//        ProductName = Database.getProductName(productID);
+//        Qty = qty;
+//        Description = description;
+//        Price = price;
+//    }
 
     public int getColNo() {
         return ColNo;

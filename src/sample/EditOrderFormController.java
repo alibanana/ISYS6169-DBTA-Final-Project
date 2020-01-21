@@ -7,15 +7,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
 
-import javax.xml.crypto.Data;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -39,7 +38,6 @@ public class EditOrderFormController implements Initializable {
     @FXML private Label orderIDLabel;
     @FXML private Label orderDateLabel;
     @FXML private Label orderTimeLabel;
-    @FXML private Label orderStatusLabel;
     @FXML private Label branchLabel;
 
     @FXML private Label grandTotalLabel;
@@ -55,7 +53,12 @@ public class EditOrderFormController implements Initializable {
     @FXML private ObservableList<SubOrder> SubOrderList = FXCollections.observableArrayList();
 
     @Override
-    public void initialize(URL url, ResourceBundle rb){}
+    public void initialize(URL url, ResourceBundle rb){
+        noCol.setCellValueFactory(new PropertyValueFactory<>("ColNo"));
+        productNameCol.setCellValueFactory(new PropertyValueFactory<>("ProductName"));
+        qtyCol.setCellValueFactory(new PropertyValueFactory<>("Qty"));
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("Price"));
+    }
 
     public void initData(Controller parentController, Order order, ObservableList<Product> ProductList){
         this.parentController = parentController;
@@ -69,9 +72,12 @@ public class EditOrderFormController implements Initializable {
         orderIDLabel.setText(order.getOrderID());
         orderDateLabel.setText(order.getLocalDateTime().toLocalDate().toString());
         orderTimeLabel.setText(order.getLocalDateTime().toLocalTime().toString());
+        branchLabel.setText(order.getBranch());
         grandTotalLabel.setText(String.valueOf(order.getTotal()));
         cash.setText(String.valueOf(order.getCash()));
+
         RefreshSubOrderList();
+        RefreshSubOrderTable();
     }
 
     private void bindProductName(){
@@ -85,24 +91,50 @@ public class EditOrderFormController implements Initializable {
     public void ProductNameAction(){
         setSelectedProduct(productName.getText());
         productPrice.setText(String.valueOf(selectedProduct.getPrice()));
-        System.out.println("Selected Product: " + selectedProduct.getProductName());
     }
 
     private void setSelectedProduct(String selectedProductName) {
         for (Product product : ProductList) {
             if (product.getProductName().equals(selectedProductName)){
                 selectedProduct = product;
+                System.out.println("Selected Product: " + selectedProduct.getProductName());
                 return;
             }
         }
     }
 
     @FXML
+    public void TableViewOnSelected(){
+        System.out.println("TableView selected on EditOrderForm");
+        SubOrder subOrder = SubOrderTable.getSelectionModel().getSelectedItem();
+        setSelectedProduct(subOrder.getProductName());
+        productName.setText(subOrder.getProductName());
+        productPrice.setText(String.valueOf(subOrder.getPrice()));
+        qty.setText(String.valueOf(subOrder.getQty()));
+        productDescription.setText(subOrder.getDescription());
+    }
+
+    @FXML
     public void addItemClicked() {
-        System.out.println("AddItemButton clicked on OrderForm.fxml");
-        SubOrderList.add(new SubOrder(SubOrderList.size()+1, selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
+        System.out.println("AddItemButton clicked on EditOrderForm");
+        SubOrder subOrder = SubOrderTable.getSelectionModel().getSelectedItem();
+        // If Product is Edited
+        if (productInList(selectedProduct.getProductID())){
+            SubOrderList.remove(SubOrderTable.getSelectionModel().getSelectedIndex());
+        }
+        SubOrderList.add(new SubOrder(subOrder.getColNo(), selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
         RefreshSubOrderTable();
         clearTextfields();
+    }
+
+    private boolean productInList(String ProductID) {
+        for (SubOrder subOrder : SubOrderList) {
+            if (subOrder.getProductID().equals(ProductID)) {
+                System.out.println(ProductID + " in SubOrderList");
+                return true;
+            }
+        }
+        return false;
     }
 
     private void clearTextfields(){
@@ -120,7 +152,6 @@ public class EditOrderFormController implements Initializable {
     }
 
     private void RefreshSubOrderTable(){
-        // RefreshSubOrderList();
         SubOrderTable.setItems(SubOrderList);
 
         // Calculate subTotal
@@ -136,14 +167,15 @@ public class EditOrderFormController implements Initializable {
     private void RefreshSubOrderList(){
         SubOrderList.clear();
         try {
-            String sql = " SELECT orders_details.*, price FROM orders_details, products WHERE orders_details.product_id = products.product_id;";
+            String sql = "SELECT orders_details.*, product_name, price FROM orders_details INNER JOIN products ON orders_details.product_id = products.product_id WHERE order_id = '%s'";
+            sql = String.format(sql, order.getOrderID());
 
             Connection conn = Database.connect();
             ResultSet rs = conn.createStatement().executeQuery(sql);
 
             int colNo = 1;
             while(rs.next()) {
-                SubOrderList.add(new SubOrder(colNo, rs.getString("product_id"),
+                SubOrderList.add(new SubOrder(colNo, rs.getString("product_id"), rs.getString("product_name"),
                         rs.getInt("qty"), rs.getString("description"), rs.getInt("price")));
                 colNo++;
             }
@@ -163,6 +195,8 @@ public class EditOrderFormController implements Initializable {
         int Qty;
         String Description;
 
+        Database.editOrder(order.getOrderID(), Integer.parseInt(grandTotalLabel.getText()), Integer.parseInt(changeLabel.getText()));
+
         Database.clearSubOrders(order.getOrderID());
 
         // SQL queries
@@ -173,7 +207,6 @@ public class EditOrderFormController implements Initializable {
             Description = subOrder.getDescription();
             Database.addSubOrder(OrderID, ProductID, Qty, Description);
         }
-        Database.editOrder(order.getOrderID(), Integer.parseInt(grandTotalLabel.getText()), Integer.parseInt(changeLabel.getText()));
 
         // Close Stage & Refresh Table
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

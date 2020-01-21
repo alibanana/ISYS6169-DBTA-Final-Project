@@ -11,7 +11,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
 
-import javax.xml.crypto.Data;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -41,7 +40,6 @@ public class OrderFormController implements Initializable {
     @FXML private Label orderIDLabel;
     @FXML private Label orderDateLabel;
     @FXML private Label orderTimeLabel;
-    @FXML private Label orderStatusLabel;
     @FXML private Label branchLabel;
 
     @FXML private Label grandTotalLabel;
@@ -171,7 +169,6 @@ public class OrderFormController implements Initializable {
     }
 
     private void RefreshSubOrderTable(){
-        // RefreshSubOrderList();
         SubOrderTable.setItems(SubOrderList);
 
         // Calculate subTotal

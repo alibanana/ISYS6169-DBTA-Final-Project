@@ -177,20 +177,36 @@ public class Controller implements Initializable {
 
         // Area Manager Settings
         if (Settings == 1){
+            OrderOptionforAreaManagers();
         }
         // Branch Manager Settings
         else if (Settings == 2){
+            ProductOptionforBranchManagersAndCashiers();
             DisableBranchOptions();
         }
         // Cashier Options
         else if (Settings == 3){
-            ProductOptionforCashiers();
+            OrderOptionforCashiers();
+            ProductOptionforBranchManagersAndCashiers();
             DisableEmployeeOptions();
             DisableBranchOptions();
         }
     }
 
-    private void ProductOptionforCashiers(){
+    private void OrderOptionforAreaManagers(){
+        System.out.println("Enable Order Option for Area Managers");
+        NewOrderLabel.setDisable(true);
+        NewOrderLabel.setVisible(false);
+    }
+
+    private void OrderOptionforCashiers(){
+        System.out.println("Enable Order Option for Cashiers");
+        DeleteOrderLabel.setDisable(true);
+        DeleteOrderLabel.setVisible(false);
+    }
+
+
+    private void ProductOptionforBranchManagersAndCashiers(){
         System.out.println("Enable Product Option for Cashiers");
         NewProductLabel.setDisable(true);
         NewProductLabel.setVisible(false);
@@ -351,6 +367,8 @@ public class Controller implements Initializable {
     public void EditOrderClicked() throws IOException {
         System.out.println("Edit Order Clicked");
         new FadeIn(EditOrderLabel).setSpeed(5).play();
+
+        RefreshProductList();
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("EditOrderForm.fxml"));

@@ -1,10 +1,6 @@
 package sample;
 
-import org.omg.CORBA.ORB;
-
-import java.lang.reflect.Type;
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -298,7 +294,7 @@ public class Database {
             conn = connect();
             stmt = conn.createStatement();
 
-            String sql = "DELETE FROM order_details WHERE order_id = '%s'";
+            String sql = "DELETE FROM orders_details WHERE order_id = '%s'";
             sql = String.format(sql, OrderID);
             stmt.execute(sql);
 
