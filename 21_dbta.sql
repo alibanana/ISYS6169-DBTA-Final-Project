@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 13, 2020 at 09:26 AM
+-- Generation Time: Jan 23, 2020 at 06:14 PM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.23
 
@@ -63,7 +63,8 @@ CREATE TABLE `employee` (
 INSERT INTO `employee` (`employee_id`, `employee_name`, `password`, `position_id`, `branch_id`) VALUES
 ('EMP00001', 'Alifio Rasyid', 'alifio', 'POS00001', ''),
 ('EMP00002', 'Muchsin Hisyam', 'muchsin', 'POS00002', 'BRC00002'),
-('EMP00003', 'Fauzan Athallah', 'fauzan123', 'POS00003', 'BRC00002');
+('EMP00003', 'Fauzan Athallah', 'fauzan123', 'POS00003', 'BRC00002'),
+('EMP00004', 'Jason', 'jason', 'POS00003', 'BRC00003');
 
 -- --------------------------------------------------------
 
@@ -80,6 +81,22 @@ CREATE TABLE `orders` (
   `cash` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `employee_id`, `datetime`, `branch_id`, `total`, `cash`) VALUES
+('ORD00001', 'EMP00002', '2020-01-13 18:34:13', 'BRC00002', 270500, 0),
+('ORD00002', 'EMP00003', '2020-01-21 14:08:06', 'BRC00002', 204000, 250000),
+('ORD00003', 'EMP00003', '2020-01-21 14:08:35', 'BRC00002', 140000, 150000),
+('ORD00004', 'EMP00002', '2020-01-21 14:09:04', 'BRC00002', 185000, 200000),
+('ORD00005', 'EMP00002', '2020-01-21 17:43:42', 'BRC00003', 35000, 50000),
+('ORD00006', 'EMP00002', '2020-01-21 18:10:10', 'BRC00002', 70000, 100000),
+('ORD00007', 'EMP00002', '2020-01-21 18:19:33', 'BRC00002', 28000, 29000),
+('ORD00008', 'EMP00002', '2020-01-21 18:20:10', 'BRC00002', 28000, 28000),
+('ORD00009', 'EMP00002', '2020-01-24 00:07:30', 'BRC00002', 126000, 500000),
+('ORD00010', 'EMP00002', '2020-01-24 00:10:05', 'BRC00002', 28000, 100000);
+
 -- --------------------------------------------------------
 
 --
@@ -92,6 +109,31 @@ CREATE TABLE `orders_details` (
   `qty` int(11) NOT NULL,
   `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `orders_details`
+--
+
+INSERT INTO `orders_details` (`order_id`, `product_id`, `qty`, `description`) VALUES
+('ORD00002', 'PRO00024', 2, ''),
+('ORD00002', 'PRO00023', 3, ''),
+('ORD00002', 'PRO00004', 1, ''),
+('ORD00005', 'PRO00024', 1, ''),
+('ORD00001', 'PRO00025', 1, 'q'),
+('ORD00001', 'PRO00024', 1, ''),
+('ORD00001', 'PRO00021', 2, ''),
+('ORD00001', 'PRO00024', 2, ''),
+('ORD00006', 'PRO00034', 1, ''),
+('ORD00004', 'PRO00023', 3, ''),
+('ORD00004', 'PRO00032', 3, ''),
+('ORD00004', 'PRO00020', 1, ''),
+('ORD00007', 'PRO00023', 1, ''),
+('ORD00003', 'PRO00004', 2, ''),
+('ORD00003', 'PRO00007', 1, ''),
+('ORD00008', 'PRO00023', 1, ''),
+('ORD00009', 'PRO00024', 3, ''),
+('ORD00009', 'PRO00031', 3, 'AIR'),
+('ORD00010', 'PRO00023', 1, '');
 
 -- --------------------------------------------------------
 
@@ -216,7 +258,8 @@ ALTER TABLE `employee`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
-  ADD KEY `employee_id` (`employee_id`);
+  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `branch_id` (`branch_id`);
 
 --
 -- Indexes for table `orders_details`
@@ -252,7 +295,8 @@ ALTER TABLE `product_type`
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`employee_id`);
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`employee_id`),
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`);
 
 --
 -- Constraints for table `orders_details`

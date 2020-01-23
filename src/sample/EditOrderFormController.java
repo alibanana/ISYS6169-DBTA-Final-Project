@@ -1,5 +1,6 @@
 package sample;
 
+import com.itextpdf.io.IOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,7 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
+import pdfGeneration.Invoice;
 
+import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -128,14 +131,6 @@ public class EditOrderFormController implements Initializable {
             RefreshSubOrderTable();
             calculatePaid();
             clearTextfields();
-        } catch (NullPointerException e){
-            // Validation with alert box
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
-            alert.setHeaderText("Null Item!");
-            alert.setContentText("Please input correct Items or enter Product Name text field after using its dropdown function!");
-
-            alert.showAndWait();
         } catch (NumberFormatException e){
             // Validation with alert box
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -233,26 +228,49 @@ public class EditOrderFormController implements Initializable {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
         parentController.RefreshOrderTable();
+
+        // Editing the PDF
+        Invoice inv = new Invoice(order, SubOrderList);
+        inv.makeInvoice();
     }
 
     @FXML
     public void calculatePaid(){
-        int Change = 0;
-        // Getting Grand Total value
-        int gTotal = Integer.parseInt(grandTotalLabel.getText());
-        // Getting Paid value
-        int Paid = Integer.parseInt(cash.getText());
+        try {
+            int Change = 0;
+            // Getting Grand Total value
+            int gTotal = Integer.parseInt(grandTotalLabel.getText());
+            // Getting Paid value
+            int Paid = Integer.parseInt(cash.getText());
 
-        Change =  Paid - gTotal;
-        if(Change < 0){
+            Change = Paid - gTotal;
+            if (Change < 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("Paid Has Minus Format!");
+                alert.setContentText("Please input correct paid value!");
+
+                alert.showAndWait();
+                return;
+            }
+            changeLabel.setText(String.valueOf(Change));
+        } catch (NumberFormatException e){
+            // Validation with alert box
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
-            alert.setHeaderText("Change Has Minus Format!");
-            alert.setContentText("Please input correct paid value!");
+            alert.setHeaderText("Paid Has Wrong Format!");
+            alert.setContentText("Please input correct format of paid!");
 
             alert.showAndWait();
-            return;
         }
-        changeLabel.setText(String.valueOf(Change));
+    }
+
+    @FXML
+    public void GenerateInvoice(ActionEvent event) throws InterruptedException, SQLException, IOException, java.io.IOException {
+        editOrder(event);
+
+        Invoice inv = new Invoice(order, SubOrderList);
+        inv.makeInvoice();
+        inv.openFile();
     }
 }

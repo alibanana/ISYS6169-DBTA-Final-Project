@@ -1,5 +1,6 @@
 package sample;
 
+import com.itextpdf.styledxmlparser.jsoup.nodes.DataNode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,7 +11,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.TextFields;
+import pdfGeneration.Invoice;
 
+import javax.xml.crypto.Data;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -150,49 +154,82 @@ public class OrderFormController implements Initializable {
 
     @FXML
     public void calculatePaid(){
-        int Change = 0;
-        // Getting Grand Total value
-        int gTotal = Integer.parseInt(grandTotalLabel.getText());
-        // Getting Paid value
-        int Paid = Integer.parseInt(cash.getText());
+        try {
+            int Change = 0;
+            // Getting Grand Total value
+            int gTotal = Integer.parseInt(grandTotalLabel.getText());
+            // Getting Paid value
+            int Paid = Integer.parseInt(cash.getText());
 
-        Change =  Paid - gTotal;
-        if(Change < 0){
+            Change = Paid - gTotal;
+            if (Change < 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("Paid Has Minus Format!");
+                alert.setContentText("Please input correct paid value!");
+
+                alert.showAndWait();
+                return;
+            }
+            changeLabel.setText(String.valueOf(Change));
+        } catch (NumberFormatException e){
+            // Validation with alert box
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
-            alert.setHeaderText("Change Has Minus Format!");
-            alert.setContentText("Please input correct paid value!");
+            alert.setHeaderText("Paid Has Wrong Format!");
+            alert.setContentText("Please input correct format of paid!");
 
             alert.showAndWait();
-            return;
         }
-        changeLabel.setText(String.valueOf(Change));
     }
 
     @FXML
-    public void addOrder(ActionEvent event) throws SQLException{
-        // Set Sub-Orders variables
-        String OrderID;
-        String ProductID;
-        int Qty;
-        String Description;
+    public void addOrder(ActionEvent event) throws SQLException, IOException {
+        try {
+            // Set Sub-Orders variables
+            String OrderID;
+            String ProductID;
+            int Qty;
+            String Description;
 
-        LocalDateTime dateTime = LocalDate.parse(orderDateLabel.getText()).atTime(LocalTime.parse(orderTimeLabel.getText()));
+            LocalDateTime dateTime = LocalDate.parse(orderDateLabel.getText()).atTime(LocalTime.parse(orderTimeLabel.getText()));
 
-        // SQL queries
-        Database.addOrder(newOrderID, user.getEmployeeID(), dateTime, user.getBranchID(), Integer.valueOf(grandTotalLabel.getText()), Integer.valueOf(cash.getText()));
-        for (SubOrder subOrder: SubOrderList){
-            OrderID = newOrderID;
-            ProductID = subOrder.getProductID();
-            Qty = subOrder.getQty();
-            Description = subOrder.getDescription();
-            Database.addSubOrder(OrderID, ProductID, Qty, Description);
+            // SQL queries
+            Database.addOrder(newOrderID, user.getEmployeeID(), dateTime, user.getBranchID(), Integer.valueOf(grandTotalLabel.getText()), Integer.valueOf(cash.getText()));
+            for (SubOrder subOrder : SubOrderList) {
+                OrderID = newOrderID;
+                ProductID = subOrder.getProductID();
+                Qty = subOrder.getQty();
+                Description = subOrder.getDescription();
+                Database.addSubOrder(OrderID, ProductID, Qty, Description);
+            }
+
+            // Close Stage & Refresh Table
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.close();
+            parentController.RefreshOrderTable();
+
+            Order order = new Order(newOrderID, Database.getEmployeeName(user.getEmployeeID()), dateTime, Database.getBranchName(user.getBranchID()), Integer.valueOf(grandTotalLabel.getText()), Integer.valueOf(cash.getText()));
+            Invoice inv = new Invoice(order, SubOrderList);
+            inv.makeInvoice();
+            inv.openFile();
+        } catch (NumberFormatException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Paid Has Wrong Format!");
+            alert.setContentText("Please input correct format of paid!");
+
+            alert.showAndWait();
+        } catch (NullPointerException e){
+            // Validation with alert box
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Paid Is Empty!");
+            alert.setContentText("Please input value for paid!");
+
+            alert.showAndWait();
         }
-
-        // Close Stage & Refresh Table
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
-        parentController.RefreshOrderTable();
     }
 
     private void RefreshSubOrderTable(){
