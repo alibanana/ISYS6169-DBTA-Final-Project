@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,6 +95,9 @@ public class Controller implements Initializable {
     @FXML private TableColumn<Order, String> EmpBranchCol;
     ObservableList<Employee> EmployeeList = FXCollections.observableArrayList();
     public HashMap<String, String> AllPosition;
+
+    // Employee Data temporarily saved
+    public boolean checkPassword = false;
 
     // Branch Pane Members
     @FXML private AnchorPane BranchPane;
@@ -727,6 +729,8 @@ public class Controller implements Initializable {
         try {
             Employee selectedEmployee = EmployeeTable.getSelectionModel().getSelectedItem();
             int selectedPositionID = Integer.parseInt(Database.getPositionID(selectedEmployee.getPosition()).replaceAll("[^\\d.]", ""));
+
+            // If Current Employee's Position below chosen.
             if(selectedPositionID < Settings){
                 // Validation with alert box
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -737,19 +741,25 @@ public class Controller implements Initializable {
                 alert.showAndWait();
                 return;
             }
-            if(Settings == 3 && selectedEmployee.getEmployeeID().equals(user.getEmployeeID())){
-                controller.initData(this, selectedEmployee, AllPosition, AllBranch, Settings);
-            } else if(Settings != 3){
-                controller.initData(this, selectedEmployee, AllPosition, AllBranch, Settings);
-            } else{
-                // Validation with alert box
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Dialog");
-                alert.setHeaderText("Access Denied!");
-                alert.setContentText("You cannot edit other employee!");
 
-                alert.showAndWait();
-                return;
+            // Cashier can only edit themselves (regardless of positions)
+            if(Settings == 3){
+                if (selectedEmployee.getEmployeeID().equals(user.getEmployeeID())){
+                    if (!checkUser()){return;}
+                    controller.initData(this, selectedEmployee, AllPosition, AllBranch, Settings);
+                } else {
+                    // Validation with alert box
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Dialog");
+                    alert.setHeaderText("Access Denied!");
+                    alert.setContentText("You cannot edit other employee!");
+
+                    alert.showAndWait();
+                    return;
+                }
+            } else {
+                if (!checkUser()){return;}
+                controller.initData(this, selectedEmployee, AllPosition, AllBranch, Settings);
             }
         } catch (NullPointerException e){
             // Validation with alert box
@@ -770,6 +780,25 @@ public class Controller implements Initializable {
         stage.showAndWait();
     }
 
+    private boolean checkUser() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("LoginPage.fxml"));
+        Parent LoginPageParent = loader.load();
+
+        Stage stage = new Stage(); // New stage (window)
+
+        LoginPageController logincontroller = loader.getController();
+        logincontroller.LoginPageCheckUser(this, user);
+
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setTitle("Check User");
+        stage.setScene(new Scene(LoginPageParent));
+        stage.showAndWait();
+
+        return checkPassword;
+    }
+
     public void RefreshEmployeeFilter(int settings){
         EmployeeFilter.getItems().clear();
         AllPosition = Database.getAllPosition();
@@ -784,19 +813,15 @@ public class Controller implements Initializable {
         try {
             EmployeeList.clear();
             String filter, sql;
+            sql = "SELECT * FROM employee";
             // Checks if ComboBox is empty
             try {
                 filter = EmployeeFilter.getValue().toString();
-                if(filter.equals("All")){
-                    sql = "SELECT * FROM employee";
-                }
-                else {
+                if(!filter.equals("All")){
                     String positionID = AllPosition.get(filter);
                     sql = String.format("SELECT * FROM employee WHERE position_id = '%s'", positionID);
                 }
-            } catch (NullPointerException e) {
-                sql = "SELECT * FROM employee";
-            }
+            } catch (NullPointerException ignored) {}
 
             Connection conn = Database.connect();
             ResultSet rs = conn.createStatement().executeQuery(sql);

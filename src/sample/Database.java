@@ -34,6 +34,7 @@ public class Database {
             sql = String.format(sql, maxConnection);
 
             stmt.execute(sql);
+            System.out.println("Set Database max_connections to " + maxConnection);
         } catch (SQLException e) {
             e.printStackTrace();
         }

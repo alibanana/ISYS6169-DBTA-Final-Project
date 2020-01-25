@@ -2,7 +2,6 @@ package pdfGeneration;
 
 
 import com.itextpdf.io.font.FontConstants;
-import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -10,7 +9,6 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -19,8 +17,6 @@ import javafx.collections.ObservableList;
 import sample.Order;
 import sample.SubOrder;
 
-import javax.swing.text.StyleConstants;
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 

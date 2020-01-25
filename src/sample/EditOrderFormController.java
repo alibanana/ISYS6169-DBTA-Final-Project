@@ -122,12 +122,15 @@ public class EditOrderFormController implements Initializable {
     public void addItemClicked() {
         try {
             System.out.println("AddItemButton clicked on EditOrderForm");
-            SubOrder subOrder = SubOrderTable.getSelectionModel().getSelectedItem();
+            int colNo;
             // If Product is Edited
             if (productInList(selectedProduct.getProductID())) {
+                colNo = SubOrderTable.getSelectionModel().getSelectedItem().getColNo();
                 SubOrderList.remove(SubOrderTable.getSelectionModel().getSelectedIndex());
+            } else {
+                colNo = SubOrderList.size() + 1;
             }
-            SubOrderList.add(new SubOrder(subOrder.getColNo(), selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
+            SubOrderList.add(new SubOrder(colNo, selectedProduct.getProductID(), selectedProduct.getProductName(), Integer.parseInt(qty.getText()), productDescription.getText(), selectedProduct.getPrice()));
             RefreshSubOrderTable();
             calculatePaid();
             clearTextfields();
