@@ -39,6 +39,9 @@ public class EditEmployeeFormController implements Initializable {
         Settings = settings;
         if(Settings == 2){
             AllPosition.remove("Area Manager");
+        } else if(Settings == 3){
+            position.setDisable(true);
+            branch.setDisable(true);
         }
         position.setItems(FXCollections.observableArrayList(AllPosition.keySet()));
         branch.setItems(FXCollections.observableArrayList(AllBranch.keySet()));
