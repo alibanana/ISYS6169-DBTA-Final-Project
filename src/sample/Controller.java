@@ -184,13 +184,14 @@ public class Controller implements Initializable {
         else if (Settings == 2){
             OrderOptionforBranchManagers();
             ProductOptionforBranchManagersAndCashiers();
+            BranchOptionforAll();
         }
         // Cashier Options
         else if (Settings == 3){
             OrderOptionforCashiers();
             ProductOptionforBranchManagersAndCashiers();
             EmployeeOptionforCashiers();
-            BranchOptionforCashiers();
+            BranchOptionforAll();
         }
     }
 
@@ -244,8 +245,8 @@ public class Controller implements Initializable {
     }
 
     // BranchPane Options
-    private void BranchOptionforCashiers(){
-        System.out.println("Enable Branch Option for Cashiers");
+    private void BranchOptionforAll(){
+        System.out.println("Enable Branch Option for Branch Manager and Cashier");
         NewBranchLabel.setDisable(true);
         NewBranchLabel.setVisible(false);
         DeleteBranchLabel.setDisable(true);
